@@ -1,22 +1,21 @@
 package com.example.reservebite.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 @Entity
 @Data
-public class OrderItem {
+public class DineIn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer quantity;
-
     @ManyToOne
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
+    private Table table;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @OneToOne
+    private Users waiterId;
 }
