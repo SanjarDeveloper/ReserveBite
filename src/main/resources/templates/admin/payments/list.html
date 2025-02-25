@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payments</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Payments</h1>
+    <div class="mb-3">
+        <a th:href="@{/templates/admin/payments/new}" class="btn btn-primary">Add New Payment</a>
+        <a href="/admin/dashboard" class="btn btn-secondary">Go Back</a>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Payment Method</th>
+            <th>Payment Status</th>
+            <th>Payment Date & Time</th>
+            <th>Amount</th>
+            <th>Order ID</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.paymentMethod}"></td>
+            <td th:text="${payment.paymentStatus}"></td>
+            <td th:text="${payment.paymentDateTime}"></td>
+            <td th:text="${payment.amount}"></td>
+            <td th:text="${payment.order.id}"></td>
+            <td>
+                <a th:href="@{/templates/admin/payments/edit/{id}(id=${payment.id})}" class="btn btn-warning btn-sm">Edit</a>
+                <a th:href="@{/templates/admin/payments/delete/{id}(id=${payment.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

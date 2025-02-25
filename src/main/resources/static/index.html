@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ReserveBite</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .banner {
+            background-image: url('path/to/banner-image.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+        }
+        .banner h1 {
+            font-size: 48px;
+        }
+        .banner p {
+            font-size: 24px;
+        }
+        .dish-card {
+            margin-bottom: 20px;
+        }
+        .dish-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .subscribe-box {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<!-- Header Section -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Shop</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-shopping-cart"></i> Cart</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-user"></i> Profile</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Main Banner -->
+<section class="banner">
+    <div class="container">
+        <h1>All breakfasts in one place</h1>
+        <p>Best breakfast dishes card in the country.</p>
+        <button class="btn btn-primary">Filter</button>
+    </div>
+</section>
+
+<!-- Available Dishes Section -->
+<section class="container mt-5">
+    <div class="row">
+        <div class="col-md-3 dish-card">
+            <img src="path/to/thai-green-curry.jpg" alt="Thai Green Curry">
+            <h3>Thai Green Curry</h3>
+            <p>A delicious Thai green curry made with fresh ingredients and aromatic spices.</p>
+            <p>$12.95</p>
+            <button class="btn btn-primary">Add to Cart</button>
+        </div>
+        <div class="col-md-3 dish-card">
+            <img src="path/to/margherita-pizza.jpg" alt="Margherita Pizza">
+            <h3>Margherita Pizza</h3>
+            <p>Classic Margherita pizza with fresh tomatoes, mozzarella cheese, and basil.</p>
+            <p>$10.95</p>
+            <button class="btn btn-primary">Add to Cart</button>
+        </div>
+        <div class="col-md-3 dish-card">
+            <img src="path/to/mushroom-risotto.jpg" alt="Mushroom Risotto">
+            <h3>Mushroom Risotto</h3>
+            <p>Creamy mushroom risotto made with Arborio rice, mushrooms, and Parmesan cheese.</p>
+            <p>$14.95</p>
+            <button class="btn btn-primary">Add to Cart</button>
+        </div>
+        <div class="col-md-3 dish-card">
+            <img src="path/to/mexican-tacos.jpg" alt="Mexican Tacos">
+            <h3>Mexican Tacos</h3>
+            <p>Tasty Mexican tacos with beef, lettuce, cheese, and salsa.</p>
+            <p>$9.95</p>
+            <button class="btn btn-primary">Add to Cart</button>
+        </div>
+    </div>
+</section>
+
+<!-- Subscription Section -->
+<section class="container mt-5">
+    <div class="subscribe-box">
+        <h2>Stay Foodie Updated!</h2>
+        <p>Subscribe now to receive the latest delicious updates and food trends directly to your inbox.</p>
+        <button class="btn btn-light">Join for Free</button>
+    </div>
+</section>
+
+<!-- Chef Image Section -->
+<section class="container mt-5">
+    <div class="text-center">
+        <img src="path/to/chef-image.jpg" alt="Chef Image" class="img-fluid">
+    </div>
+</section>
+
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Add user-specific content here -->
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

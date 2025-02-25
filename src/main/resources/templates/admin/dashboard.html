@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Admin Dashboard - ReserveBite</title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Admin Dashboard</h1>
+    <p class="text-center">Welcome, Admin! This is your dashboard.</p>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <a href="/admin/users" class="btn btn-primary btn-block">Users</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/cuisines" class="btn btn-primary btn-block">Cuisines</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/customers" class="btn btn-primary btn-block">Customers</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/delivery-orders" class="btn btn-primary btn-block">Delivery Orders</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/couriers" class="btn btn-primary btn-block">Delivery Persons</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/dinein-orders" class="btn btn-primary btn-block">Dine In Orders</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/measurements" class="btn btn-primary btn-block">Measurements</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/menu-categories" class="btn btn-primary btn-block">Menu Categories</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/menus" class="btn btn-primary btn-block">Menus</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/orders" class="btn btn-primary btn-block">Orders</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/order-items" class="btn btn-primary btn-block">Order Items</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/payments" class="btn btn-primary btn-block">Payments</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/reservations" class="btn btn-primary btn-block">Reservations</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/restaurants" class="btn btn-primary btn-block">Restaurants</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/roles" class="btn btn-primary btn-block">Roles</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/tables" class="btn btn-primary btn-block">Tables</a>
+        </div>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+
+<!-- jQuery and Bootstrap JS -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

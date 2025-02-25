@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Order</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Edit Order</h1>
+    <form th:action="@{/templates/admin/orders/update/{id}(id=${order.id})}" th:object="${order}" method="post">
+        <div class="form-group">
+            <label for="orderDate">Order Date:</label>
+            <input type="datetime-local" id="orderDate" th:field="*{orderDate}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="totalAmount">Total Amount:</label>
+            <input type="number" id="totalAmount" step="0.01" th:field="*{totalAmount}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <input type="text" id="status" th:field="*{status}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="fulfillmentType">Fulfillment Type:</label>
+            <input type="text" id="fulfillmentType" th:field="*{fulfillmentType}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="customer">Customer:</label>
+            <select id="customer" th:field="*{customer}" class="form-control" required>
+                <option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.name}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="restaurant">Restaurant:</label>
+            <select id="restaurant" th:field="*{restaurant}" class="form-control" required>
+                <option th:each="restaurant : ${restaurants}" th:value="${restaurant.id}" th:text="${restaurant.name}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+        <a th:href="@{/templates/admin/orders}" class="btn btn-secondary mt-3">Back to List</a>
+    </form>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

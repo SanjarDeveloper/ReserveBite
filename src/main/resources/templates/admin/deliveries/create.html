@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Delivery</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Create Delivery</h1>
+    <form th:action="@{/delivery-orders}" th:object="${delivery}" method="post">
+        <div class="form-group">
+            <label for="order">Order ID:</label>
+            <select id="order" th:field="*{order}" class="form-control" required>
+                <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.id}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="deliveryAddress">Delivery Address:</label>
+            <input type="text" id="deliveryAddress" th:field="*{deliveryAddress}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="deliveryTime">Delivery Time:</label>
+            <input type="datetime-local" id="deliveryTime" th:field="*{deliveryTime}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="deliveryFee">Delivery Fee:</label>
+            <input type="number" id="deliveryFee" step="0.01" th:field="*{deliveryFee}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="courier">Courier:</label>
+            <select id="courier" th:field="*{courier}" class="form-control" required>
+                <option th:each="courier : ${couriers}" th:value="${courier.id}" th:text="${courier.name}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <a th:href="@{/delivery-orders}" class="btn btn-secondary mt-3">Back to List</a>
+</div>
+</body>
+</html>

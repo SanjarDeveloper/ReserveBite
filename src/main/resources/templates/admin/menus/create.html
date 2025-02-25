@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Menu</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Create Menu</h1>
+    <form th:action="@{/templates/admin/menus}" th:object="${menu}" method="post">
+        <div class="form-group">
+            <label for="foodName">Food Name:</label>
+            <input type="text" id="foodName" th:field="*{foodName}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" id="price" th:field="*{price}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" th:field="*{quantity}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <input type="text" id="description" th:field="*{description}" class="form-control" required/>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="isActive" th:field="*{isActive}" class="form-check-input"/>
+            <label for="isActive" class="form-check-label">Active</label>
+        </div>
+        <div class="form-group">
+            <label for="restaurant">Restaurant:</label>
+            <select id="restaurant" th:field="*{restaurant}" class="form-control" required>
+                <option th:each="restaurant : ${restaurants}" th:value="${restaurant.id}" th:text="${restaurant.name}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="measurement">Measurement:</label>
+            <select id="measurement" th:field="*{measurement}" class="form-control" required>
+                <option th:each="measurement : ${measurements}" th:value="${measurement.id}" th:text="${measurement.name}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="menuCategory">Food Category:</label>
+            <select id="menuCategory" th:field="*{menuCategory}" class="form-control" required>
+                <option th:each="menuCategory : ${menuCategories}" th:value="${menuCategory.id}" th:text="${menuCategory.name}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+    </form>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

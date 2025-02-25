@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Dine-In</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Create Dine-In</h1>
+    <form th:action="@{/dinein-orders}" th:object="${dineIn}" method="post">
+        <div class="form-group">
+            <label for="table">Table:</label>
+            <select id="table" th:field="*{table}" class="form-control" required>
+                <option th:each="table : ${tables}" th:value="${table.id}" th:text="${table.tableNumber}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="order">Order:</label>
+            <select id="order" th:field="*{order}" class="form-control" required>
+                <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.id}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="waiterId">Waiter:</label>
+            <select id="waiterId" th:field="*{waiterId}" class="form-control" required>
+                <option th:each="waiter : ${waiters}" th:value="${waiter.id}" th:text="${waiter.username}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+    </form>
+    <a th:href="@{/dinein-orders}" class="btn btn-secondary mt-3">Back to List</a>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Order Item</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Edit Order Item</h1>
+    <form th:action="@{/order-items/update/{id}(id=${orderItem.id})}" th:object="${orderItem}" method="post">
+        <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" th:field="*{quantity}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="menu">Menu:</label>
+            <select id="menu" th:field="*{menu}" class="form-control" required>
+                <option th:each="menu : ${menus}" th:value="${menu.id}" th:text="${menu.foodName}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="order">Order:</label>
+            <select id="order" th:field="*{order}" class="form-control" required>
+                <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.id}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+    </form>
+    <a th:href="@{/order-items}" class="btn btn-secondary mt-3">Back to List</a>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
