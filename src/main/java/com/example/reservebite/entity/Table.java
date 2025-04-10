@@ -1,7 +1,6 @@
 package com.example.reservebite.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 @Entity
 @jakarta.persistence.Table(name = "tables")
@@ -17,39 +16,21 @@ public class Table {
     @ManyToOne
     private Restaurant restaurant;
 
-    public Long getId() {
-        return id;
-    }
 
-    public Integer getTableNumber() {
-        return tableNumber;
-    }
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setTableNumber(Integer tableNumber) {
-        this.tableNumber = tableNumber;
-    }
+    public Integer getTableNumber() { return tableNumber; }
+    public void setTableNumber(Integer tableNumber) { this.tableNumber = tableNumber; }
 
-    public Integer getCapacity() {
-        return capacity;
-    }
+    public Integer getCapacity() { return capacity; }
+    public void setCapacity(Integer capacity) { this.capacity = capacity; }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public String getStatus() {
-        return status;
-    }
+    public Restaurant getRestaurant() { return restaurant; }
+    public void setRestaurant(Restaurant restaurant) { this.restaurant = restaurant; }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
 }

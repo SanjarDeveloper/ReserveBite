@@ -29,4 +29,8 @@ public class MenuService {
     public void deleteMenu(Long id) {
         menuRepository.deleteById(id);
     }
+
+    public List<Menu> getMenusByRestaurantId(Long restaurantId) {
+        return menuRepository.findByRestaurantIdAndIsActive(restaurantId,true);
+    }
 }

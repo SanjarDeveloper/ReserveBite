@@ -1,9 +1,13 @@
 package com.example.reservebite.controller.admin;
 
 import com.example.reservebite.entity.Cuisine;
+import com.example.reservebite.entity.Menu;
 import com.example.reservebite.entity.Restaurant;
+import com.example.reservebite.entity.Table;
 import com.example.reservebite.service.CuisineService;
+import com.example.reservebite.service.MenuService;
 import com.example.reservebite.service.RestaurantService;
+import com.example.reservebite.service.TableService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +18,14 @@ public class CuisineController {
 
     private final CuisineService cuisineService;
     private final RestaurantService restaurantService;
+    private final MenuService menuService;
+    private final TableService tableService;
 
-    public CuisineController(CuisineService cuisineService, RestaurantService restaurantService) {
+    public CuisineController(CuisineService cuisineService, RestaurantService restaurantService, MenuService menuService, TableService tableService) {
         this.cuisineService = cuisineService;
         this.restaurantService = restaurantService;
+        this.menuService = menuService;
+        this.tableService = tableService;
     }
 
     @GetMapping
@@ -55,18 +63,22 @@ public class CuisineController {
 
     @GetMapping("/delete/{id}")
     public String deleteCuisine(@PathVariable Long id) {
-        boolean incorrectDeletion = false;
         for (Restaurant allRestaurant : restaurantService.getAllRestaurants()) {
-            if (allRestaurant.getCuisine().getId().equals(id)){
-                incorrectDeletion = true;
+            if (allRestaurant.getCuisine().getId().equals(id)) {
+                for (Menu menu : menuService.getAllMenus()){
+                    if(menu.getRestaurant().getId().equals(allRestaurant.getId())){
+                        menuService.deleteMenu(menu.getId());
+                    }
+                }
+                for (Table allTable : tableService.getAllTables()) {
+                    if(allTable.getRestaurant().getId().equals(allRestaurant.getId())){
+                        tableService.deleteTable(allTable.getId());
+                    }
+                }
+                restaurantService.deleteRestaurant(allRestaurant.getId());
             }
         }
-        if (incorrectDeletion){
-            return "redirect:/incorrect-cuisine-deletion-exception";
-        } else {
-            cuisineService.deleteCuisine(id);
-            return "redirect:/admin/cuisines";
-        }
-
+        cuisineService.deleteCuisine(id);
+        return "redirect:/admin/cuisines";
     }
 }

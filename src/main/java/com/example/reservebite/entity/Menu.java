@@ -1,27 +1,51 @@
 package com.example.reservebite.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
+@Table(name = "menu")
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String foodName;
     private Double price;
     private Integer quantity;
     private String description;
     private Boolean isActive;
+
+    @Lob
+    @Column(name = "image_data", columnDefinition = "bytea")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @JsonIgnore
+    private byte[] imageData;
+
     @ManyToOne
+    @JoinColumn(name = "measurement_id")
     private Measurement measurement;
+
     @ManyToOne
+    @JoinColumn(name = "menu_category_id")
     private MenuCategory menuCategory;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
+    @JsonIgnore
     private Restaurant restaurant;
 
+    // Getters and setters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFoodName() {
@@ -60,8 +84,16 @@ public class Menu {
         return isActive;
     }
 
-    public void setIsActive(Boolean active) {
-        isActive = active;
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
     }
 
     public Measurement getMeasurement() {
@@ -86,5 +118,11 @@ public class Menu {
 
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
+    }
+
+    // New method to check if an image exists
+    @JsonProperty("hasImage")
+    public boolean hasImage() {
+        return imageData != null && imageData.length > 0;
     }
 }

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Orders</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Add Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .order-card {
+            margin-bottom: 30px;
+            border: none;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            transition: transform 0.3s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .order-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #27ae60;
+        }
+
+        .badge-danger {
+            background: #e74c3c;
+        }
+
+        .badge-primary {
+            background: #3498db;
+        }
+
+        .btn-secondary {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            background: #7f8c8d;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .alert-info {
+            border-radius: 15px;
+            background: #fff;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: #3498db;
+        }
+
+        .text-muted {
+            color: #7f8c8d !important;
+        }
+
+        h5 {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* Enhanced styles for the map */
+        .map-container {
+            height: 250px; /* Increased height */
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .map-address-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .map-controls button {
+            background: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-controls button:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-5"><i class="fas fa-history mr-2"></i>My Orders</h1>
+    <div class="text-center mb-4">
+        <a href="/user/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left mr-2"></i>Back to Dashboard</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info text-center py-4">
+        <i class="fas fa-info-circle mr-2"></i>You have no orders yet.
+    </div>
+
+    <div th:each="order : ${orders}" class="order-card">
+        <div class="order-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+<!--                    <h5><i class="fas fa-map-marker-alt mr-2"></i>Delivery Details</h5>-->
+<!--                    <p class="mb-1" th:text="${order.deliveryAddress}"></p>-->
+<!--                    <p class="text-muted mb-0" th:text="${order.contactNumber}"></p>-->
+                    <!-- Simplified map container with just delivery coordinates -->
+                    <div class="map-container"
+                         th:attr="data-order-id=${order.id},
+                         data-delivery-address=${order.deliveryAddress},
+                         data-delivery-coordinates=${order.deliveryCoordinates}">
+                        <div class="map-address-label" th:text="${order.deliveryAddress}"></div>
+                        <div class="map-controls">
+                            <button class="zoom-in"><i class="fas fa-plus"></i></button>
+                            <button class="zoom-out"><i class="fas fa-minus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <span th:if="${order.status == 'DELIVERED'}" class="badge badge-success" th:text="${order.status}"></span>
+                    <span th:if="${order.status == 'CANCELLED'}" class="badge badge-danger" th:text="${order.status}"></span>
+                    <span th:unless="${order.status == 'DELIVERED' or order.status == 'CANCELLED'}"
+                          class="badge badge-primary" th:text="${order.status}"></span>
+                    <p class="mt-2 mb-0">
+                        <strong>Total:</strong> $<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-details">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-store mr-2"></i>Restaurant Details</h5>
+                    <p class="mb-1" th:text="${order.restaurant.name}"></p>
+                    <p class="text-muted mb-0" th:text="${order.restaurant.address}"></p>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-map-marker-alt mr-2"></i>Delivery Details</h5>
+                    <p class="mb-1" th:text="${order.deliveryAddress}"></p>
+                    <p class="text-muted mb-0" th:text="${order.contactNumber}"></p>
+                    <!-- Enhanced map container -->
+<!--                    <div class="map-container" th:id="'map-' + ${order.id}">-->
+<!--                        <div class="map-address-label" th:text="${order.deliveryAddress}"></div>-->
+<!--                        <div class="map-controls">-->
+<!--                            <button th:onclick="'zoomIn(\'map-' + ${order.id} + '\')'"><i class="fas fa-plus"></i></button>-->
+<!--                            <button th:onclick="'zoomOut(\'map-' + ${order.id} + '\')'"><i class="fas fa-minus"></i></button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+            </div>
+
+            <h5><i class="fas fa-utensils mr-2"></i>Items</h5>
+            <div class="order-items">
+                <div th:each="item : ${order.orderItems}" class="order-item">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <span th:text="${item.menu.foodName}"></span>
+                        </div>
+                        <div class="col-3">
+                            <span th:text="${item.quantity} + ' x $' + ${#numbers.formatDecimal(item.menu.price, 1, 2)}"></span>
+                        </div>
+                        <div class="col-3 text-right">
+                            $<span th:text="${#numbers.formatDecimal(item.quantity * item.menu.price, 1, 2)}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all maps
+        document.querySelectorAll('.map-container').forEach(function(mapContainer) {
+            const orderId = mapContainer.getAttribute('data-order-id');
+            const deliveryAddress = mapContainer.getAttribute('data-delivery-address');
+            const deliveryCoords = mapContainer.getAttribute('data-delivery-coordinates');
+
+            // if (!deliveryCoords) {
+            //     mapContainer.innerHTML = '<div class="alert alert-warning">Delivery location not specified</div>';
+            //     mapContainer.style.height = 'auto';
+            //     return;
+            // }
+
+            try {
+                // Parse coordinates
+                const [lat, lng] = deliveryCoords.split(',').map(Number);
+
+                // Initialize map
+                const map = L.map(mapContainer, {
+                    center: [lat, lng],
+                    zoom: 15,
+                    zoomControl: false,
+                    scrollWheelZoom: false
+                });
+
+                // Add tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(map);
+
+                // Delivery marker
+                const deliveryIcon = L.divIcon({
+                    className: 'delivery-marker',
+                    html: '<i class="fas fa-map-marker-alt" style="color: #e74c3c; font-size: 30px;"></i>',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30]
+                });
+
+                L.marker([lat, lng], {
+                    icon: deliveryIcon
+                }).addTo(map)
+                    .bindPopup(`
+                    <div style="font-weight: bold; margin-bottom: 5px;">Delivery Address</div>
+                    <div>${deliveryAddress}</div>
+                `)
+                    .openPopup();
+
+                // Add zoom controls
+                mapContainer.querySelector('.zoom-in').addEventListener('click', () => map.zoomIn());
+                mapContainer.querySelector('.zoom-out').addEventListener('click', () => map.zoomOut());
+
+            } catch (e) {
+                // console.error('Error initializing map for order ' + orderId, e);
+                // mapContainer.innerHTML = '<div class="alert alert-warning">Could not load map</div>';
+                // mapContainer.style.height = 'auto';
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,50 +1,368 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Reservation</title>
-    <!-- Bootstrap CSS -->
+    <title>Create Reservation - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .alert {
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Create Reservation</h1>
-    <form th:action="@{/templates/admin/reservations}" th:object="${reservation}" method="post">
-        <div class="form-group">
-            <label for="reservationDate">Reservation Date:</label>
-            <input type="datetime-local" id="reservationDate" th:field="*{reservationDate}" class="form-control" required/>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Form Content -->
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4"><i class="fas fa-calendar-check mr-2"></i>Create Reservation</h1>
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
         </div>
-        <div class="form-group">
-            <label for="numberOfGuests">Number of Guests:</label>
-            <input type="number" id="numberOfGuests" th:field="*{numberOfGuests}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="status">Status:</label>
-            <input type="text" id="status" th:field="*{status}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="restaurant">Restaurant:</label>
-            <select id="restaurant" th:field="*{restaurant}" class="form-control" required>
-                <option th:each="restaurant : ${restaurants}" th:value="${restaurant.id}" th:text="${restaurant.name}"></option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="customer">Customer:</label>
-            <select id="customer" th:field="*{customer}" class="form-control" required>
-                <option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.name}"></option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="table">Table:</label>
-            <select id="table" th:field="*{table}" class="form-control" required>
-                <option th:each="table : ${tables}" th:value="${table.id}" th:text="${table.tableNumber}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-    </form>
-    <a th:href="@{/templates/admin/reservations}" class="btn btn-secondary mt-3">Back to List</a>
+        <form id="reservationForm" th:action="@{/admin/reservations}" th:object="${reservationForm}" method="post">
+            <!-- Reservation Date -->
+            <div class="form-group">
+                <label for="reservationDate">Reservation Date</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                    <input type="datetime-local" id="reservationDate" th:field="*{reservationDate}" class="form-control" required />
+                </div>
+                <small id="dateError" class="form-text text-danger" style="display: none;">Reservation date cannot be in the past.</small>
+            </div>
+
+            <!-- Number of Guests -->
+            <div class="form-group">
+                <label for="numberOfGuests">Number of Guests</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-users"></i></span>
+                    </div>
+                    <input type="number" id="numberOfGuests" th:field="*{numberOfGuests}" class="form-control" min="1" required />
+                </div>
+                <small id="guestsError" class="form-text text-danger" style="display: none;">Number of guests must be at least 1.</small>
+            </div>
+
+            <!-- Status -->
+            <div class="form-group">
+                <label for="status">Status</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                    </div>
+                    <select id="status" th:field="*{status}" class="form-control" required>
+                        <option value="">Select Status</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELED">Canceled</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Restaurant -->
+            <div class="form-group">
+                <label for="restaurant">Restaurant</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-store"></i></span>
+                    </div>
+                    <select id="restaurant" th:field="*{restaurantId}" class="form-control" required>
+                        <option value="">Select Restaurant</option>
+                        <option th:each="restaurant : ${restaurants}"
+                                th:value="${restaurant.id}"
+                                th:text="${restaurant.name}"
+                                th:selected="${reservationForm.restaurantId == restaurant.id}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- User -->
+            <div class="form-group">
+                <label for="user">User</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <select id="user" th:field="*{userId}" class="form-control" required>
+                        <option value="">Select User</option>
+                        <option th:each="user : ${users}"
+                                th:value="${user.id}"
+                                th:text="${user.name}"
+                                th:selected="${reservationForm.userId == user.id}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="form-group">
+                <label for="table">Table</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-chair"></i></span>
+                    </div>
+                    <select id="table" th:field="*{tableId}" class="form-control" required>
+                        <option value="">Select Table</option>
+                        <!-- Options will be populated dynamically via JavaScript -->
+                    </select>
+                </div>
+                <small id="tableError" class="form-text text-danger" style="display: none;">Error loading tables. Please try again.</small>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/reservations}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Save
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const reservationDateInput = document.getElementById('reservationDate');
+        const restaurantSelect = document.getElementById('restaurant');
+        const tableSelect = document.getElementById('table');
+        const form = document.getElementById('reservationForm');
+        const dateError = document.getElementById('dateError');
+        const numberOfGuestsInput = document.getElementById('numberOfGuests');
+        const guestsError = document.getElementById('guestsError');
+        const tableError = document.getElementById('tableError');
+
+        // Set the minimum date to now
+        const now = new Date();
+        const minDate = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+        reservationDateInput.setAttribute('min', minDate);
+
+        // Define the selected tableId from the form (if any)
+        const selectedTableId = [[${reservationForm.tableId != null ? reservationForm.tableId : 'null'}]];
+
+        // Validate reservation date on form submission
+        form.addEventListener('submit', function (event) {
+            const selectedDate = new Date(reservationDateInput.value);
+            if (selectedDate < now) {
+                event.preventDefault();
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+            }
+
+            const numberOfGuests = parseInt(numberOfGuestsInput.value);
+            if (numberOfGuests < 1) {
+                event.preventDefault();
+                guestsError.style.display = 'block';
+            } else {
+                guestsError.style.display = 'none';
+            }
+        });
+
+        // Validate reservation date on input change
+        reservationDateInput.addEventListener('change', function () {
+            const selectedDate = new Date(reservationDateInput.value);
+            if (selectedDate < now) {
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+                // Refresh table options if restaurant is selected
+                if (restaurantSelect.value) {
+                    fetchTables();
+                }
+            }
+        });
+
+        // Validate number of guests on input change
+        numberOfGuestsInput.addEventListener('change', function () {
+            const numberOfGuests = parseInt(numberOfGuestsInput.value);
+            if (numberOfGuests < 1) {
+                guestsError.style.display = 'block';
+            } else {
+                guestsError.style.display = 'none';
+            }
+        });
+
+        // Fetch available tables when restaurant or reservation date changes
+        function fetchTables() {
+            const restaurantId = restaurantSelect.value;
+            const reservationDate = reservationDateInput.value;
+
+            if (!restaurantId || !reservationDate) {
+                tableSelect.innerHTML = '<option value="">Select Table</option>';
+                tableError.style.display = 'none';
+                return;
+            }
+
+            // Make AJAX request to fetch available tables
+            fetch(`/admin/reservations/available-tables?restaurantId=${restaurantId}&reservationDate=${reservationDate}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear existing options
+                    tableSelect.innerHTML = '<option value="">Select Table</option>';
+
+                    // Populate table dropdown with available tables
+                    data.forEach(table => {
+                        const option = document.createElement('option');
+                        option.value = table.id;
+                        option.textContent = table.tableNumber;
+                        // Pre-select the table if it matches the selectedTableId
+                        if (selectedTableId !== null && table.id == selectedTableId) {
+                            option.selected = true;
+                        }
+                        tableSelect.appendChild(option);
+                    });
+                    tableError.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error fetching tables:', error);
+                    tableSelect.innerHTML = '<option value="">Error loading tables</option>';
+                    tableError.style.display = 'block';
+                });
+        }
+
+        // Listen for changes in restaurant selection
+        restaurantSelect.addEventListener('change', fetchTables);
+
+        // Listen for changes in reservation date (to check table availability)
+        reservationDateInput.addEventListener('change', fetchTables);
+
+        // Initial fetch of tables if restaurant and date are pre-selected (e.g., after form validation error)
+        if (restaurantSelect.value && reservationDateInput.value) {
+            fetchTables();
+        }
+    });
+</script>
 </body>
 </html>

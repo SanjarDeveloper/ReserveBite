@@ -2,39 +2,171 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Register - ReserveBite</title>
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .register-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .text-center a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .alert-danger {
+            border-radius: 10px;
+            background: #ffebee;
+            color: #e74c3c;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-<div th:insert="~{fragments/header :: header}"></div>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Register</h1>
-    <form th:action="@{/register}" th:object="${user}" method="post" class="fade-in">
-        <div th:if="${usernameExists}" class="alert alert-danger">
-            Username already exists. Please choose another one.
-        </div>
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" th:field="*{username}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" th:field="*{password}" class="form-control" required/>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Register</button>
-    </form>
-    <p class="text-center mt-3">Already have an account? <a th:href="@{/login}">Login here</a></p>
-</div>
-<div th:insert="~{fragments/footer :: footer}"></div>
+    <div class="register-container">
+        <h1 class="text-center mb-4"><i class="fas fa-user-plus mr-2"></i>Register</h1>
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <div th:if="${usernameExists}" class="alert alert-danger text-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>Username already exists. Please choose another one.
+            </div>
 
-<!-- jQuery and Bootstrap JS -->
-<script th:src="@{/js/jquery.min.js}"></script>
-<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+            <!-- Name -->
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                    </div>
+                    <input type="text" id="name" th:field="*{name}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" id="username" th:field="*{username}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    </div>
+                    <input type="tel" id="phone" th:field="*{phone}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    </div>
+                    <input type="password" id="password" th:field="*{password}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-user-check mr-2"></i>Register
+            </button>
+        </form>
+        <p class="text-center mt-3">Already have an account? <a th:href="@{/login}">Login here</a></p>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

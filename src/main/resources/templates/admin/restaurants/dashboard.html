@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Management - ReserveBite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container { padding: 20px; }
+
+        .sidebar {
+            background: #fff;
+            position: fixed;
+            height: 100%;
+            padding: 20px;
+            box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            text-decoration: none;
+            color: #555;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background: #f1f1f1;
+            color: #e74c3c;
+        }
+
+        .sidebar a.active {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #e74c3c;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: 600;
+            color: #e74c3c;
+            margin: 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .new-restaurant-btn, .new-table-btn, .new-menu-btn, .new-menu-category-btn, .new-measurement-btn, .new-cuisine-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            float: right;
+            transition: background 0.3s ease;
+            margin-top: 32px;
+            margin-left: 15px;
+        }
+
+        .new-restaurant-btn:hover, .new-table-btn:hover, .new-menu-btn:hover, .new-menu-category-btn:hover, .new-measurement-btn:hover, .new-cuisine-btn:hover {
+            background: #c0392b;
+        }
+
+        .card table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .card th, .card td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card th {
+            background: #f8f8f8;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .card td {
+            color: #666;
+        }
+
+        .card tr:hover {
+            background: #f8f8f8;
+        }
+
+        .card .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        .action-buttons a {
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            margin-left: 5px;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .action-buttons .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-buttons .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .action-buttons .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-buttons .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .view-all-btn {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+            text-align: center;
+        }
+
+        .view-all-btn:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>ReserveBite</h2>
+    <a href="/admin/dashboard">Dashboard</a>
+    <a href="/admin/orders">Order Management</a>
+    <a href="/admin/reservations">Reservation Management</a>
+    <a href="/admin/restaurants" class="active">Restaurant Management</a>
+    <a href="/admin/users">User Management</a>
+    <a href="/admin/messages">Messages</a>
+    <a th:href="@{/logout}">Log out</a>
+</div>
+
+<div class="content">
+    <h1>Restaurant Management</h1>
+    <p>Manage and Track Restaurant Performance</p>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Total Restaurants</h3>
+            <p><strong><span th:text="${totalRestaurants}"></span></strong></p>
+        </div>
+        <div class="card">
+            <h3>Active Restaurants</h3>
+            <p><strong><span th:text="${activeRestaurants}"></span></strong></p>
+        </div>
+        <div class="card">
+            <h3>Total Orders</h3>
+            <p><strong><span th:text="${totalOrders}"></span></strong></p>
+        </div>
+        <div class="card">
+            <h3>Total Reservations</h3>
+            <p><strong><span th:text="${totalReservations}"></span></strong></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Top Performing Restaurants</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Orders</th>
+                <th>Revenue</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="topRestaurant : ${topRestaurants}">
+                <td><span th:text="${topRestaurant[0] != null ? topRestaurant[0] : 'N/A'}"></span></td>
+                <td><span th:text="${topRestaurant[1]}"></span></td>
+                <td>$<span th:text="${topRestaurant[2]}"></span></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(topRestaurants)}">
+                <td colspan="3" class="no-data">No top performing restaurants</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Recent Restaurants</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Cuisine</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="restaurant : ${recentRestaurants}">
+                <td><span th:text="${restaurant.name != null ? restaurant.name : 'N/A'}"></span></td>
+                <td><span th:text="${restaurant.address != null ? restaurant.address : 'N/A'}"></span></td>
+                <td><span th:text="${restaurant.cuisine != null ? restaurant.cuisine.name : 'N/A'}"></span></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/restaurants/edit/{id}(id=${restaurant.id})}" class="edit-btn">Edit</a>
+                        <a th:href="@{/admin/restaurants/delete/{id}(id=${restaurant.id})}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this restaurant?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentRestaurants)}">
+                <td colspan="4" class="no-data">No recent restaurants</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/admin/restaurants/all" class="view-all-btn">View All Restaurants</a>
+    </div>
+
+    <div class="card">
+        <h3>Recent Tables</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Table Number</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Restaurant</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="table : ${recentTables}">
+                <td><span th:text="${table.tableNumber}"></span></td>
+                <td><span th:text="${table.capacity}"></span></td>
+                <td><span th:text="${table.status}"></span></td>
+                <td><span th:text="${table.restaurant.name}"></span></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/tables/edit/{id}(id=${table.id})}" class="edit-btn">Edit</a>
+                        <a th:href="@{/admin/tables/delete/{id}(id=${table.id})}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this table?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentTables)}">
+                <td colspan="5" class="no-data">No recent tables</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/admin/tables" class="view-all-btn">View All Tables</a>
+    </div>
+
+    <div class="card">
+        <h3>Recent Menus</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Food Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Restaurant</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="menu : ${recentMenus}">
+                <td><span th:text="${menu.foodName}"></span></td>
+                <td>$<span th:text="${menu.price}"></span></td>
+                <td><span th:text="${menu.quantity}"></span></td>
+                <td><span th:text="${menu.restaurant.name}"></span></td>
+                <td><span th:text="${menu.menuCategory.name}"></span></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/menus/edit/{id}(id=${menu.id})}" class="edit-btn">Edit</a>
+                        <a th:href="@{/admin/menus/delete/{id}(id=${menu.id})}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this menu?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentMenus)}">
+                <td colspan="6" class="no-data">No recent menus</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/admin/menus" class="view-all-btn">View All Menus</a>
+    </div>
+
+    <div class="card">
+        <h3>Recent Menu Categories</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="menuCategory : ${recentMenuCategories}">
+                <td><span th:text="${menuCategory.name}"></span></td>
+                <td><span th:text="${menuCategory.active} ? 'Yes' : 'No'"></span></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/menu-categories/edit/{id}(id=${menuCategory.id})}" class="edit-btn">Edit</a>
+                        <a th:href="@{/admin/menu-categories/delete/{id}(id=${menuCategory.id})}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this menu category?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentMenuCategories)}">
+                <td colspan="3" class="no-data">No recent menu categories</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/admin/menu-categories" class="view-all-btn">View All Menu Categories</a>
+    </div>
+
+    <div class="card">
+        <h3>Recent Measurements</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="measurement : ${recentMeasurements}">
+                <td><span th:text="${measurement.name}"></span></td>
+                <td><span th:text="${measurement.active} ? 'Yes' : 'No'"></span></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/measurements/edit/{id}(id=${measurement.id})}" class="edit-btn">Edit</a>
+                        <a th:href="@{/admin/measurements/delete/{id}(id=${measurement.id})}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this measurement?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentMeasurements)}">
+                <td colspan="3" class="no-data">No recent measurements</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/admin/measurements" class="view-all-btn">View All Measurements</a>
+    </div>
+
+    <div class="card">
+        <h3>Recent Cuisines</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cuisine : ${recentCuisines}">
+                <td><span th:text="${cuisine.name}"></span></td>
+                <td><span th:text="${cuisine.active} ? 'Yes' : 'No'"></span></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/cuisines/edit/{id}(id=${cuisine.id})}" class="edit-btn">Edit</a>
+                        <a th:href="@{/admin/cuisines/delete/{id}(id=${cuisine.id})}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this cuisine?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentCuisines)}">
+                <td colspan="3" class="no-data">No recent cuisines</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/admin/cuisines" class="view-all-btn">View All Cuisines</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,36 +1,72 @@
 package com.example.reservebite.entity;
 
+import com.example.reservebite.entity.enums.FulfillmentType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
-import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@jakarta.persistence.Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "order_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime orderDate;
+
     private Double totalAmount;
+
     private String status;
-    private String fulfillmentType;
+
+    @Enumerated(EnumType.STRING)
+    private FulfillmentType fulfillmentType;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
+
+    @Column(name = "delivery_coordinates")
+    private String deliveryCoordinates;
+
+    @Column(name = "contact_number")
+    private String contactNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "waiter_id")
+    private Waiter waiter;
+
+    // Transient field for form binding
+    @Transient
+    private Table table;
+
+    public Order() {
+        this.orderItems = new ArrayList<>();
+    }
+
+    // Getters and Setters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getOrderDate() {
@@ -57,11 +93,11 @@ public class Order {
         this.status = status;
     }
 
-    public String getFulfillmentType() {
+    public FulfillmentType getFulfillmentType() {
         return fulfillmentType;
     }
 
-    public void setFulfillmentType(String fulfillmentType) {
+    public void setFulfillmentType(FulfillmentType fulfillmentType) {
         this.fulfillmentType = fulfillmentType;
     }
 
@@ -88,4 +124,45 @@ public class Order {
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getDeliveryCoordinates() {
+        return deliveryCoordinates;
+    }
+
+    public void setDeliveryCoordinates(String deliveryCoordinates) {
+        this.deliveryCoordinates = deliveryCoordinates;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public Waiter getWaiter() {
+        return waiter;
+    }
+
+    public void setWaiter(Waiter waiter) {
+        this.waiter = waiter;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
 }

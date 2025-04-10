@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Message - ReserveBite</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 80px;
+        }
+
+        h1, h3 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .message-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-text {
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .message-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .text-muted {
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .custom-file-label::after {
+            content: "Browse";
+            background: #e74c3c;
+            color: white;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .custom-file-label {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/messages}">
+                    <i class="fas fa-envelope mr-1"></i>Messages
+                    <span th:if="${unreadCount > 0}" class="badge bg-danger">
+                        [[${unreadCount}]]
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Message View -->
+<div class="container">
+    <div class="message-container">
+        <h1 class="mb-4">Message from <span th:text="${message.sender.username}"></span></h1>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="card-text" th:text="${message.content}"></p>
+                <div th:if="${message.imageUrl}">
+                    <img th:src="${message.imageUrl}" class="message-image" alt="Message Image">
+                </div>
+                <small class="text-muted" th:text="${#temporals.format(message.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+            </div>
+        </div>
+
+        <h3>Reply</h3>
+        <form th:action="@{/admin/messages/{id}/reply(id=${message.id})}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <div class="form-group">
+                <textarea name="replyContent" class="form-control mb-3" rows="5" placeholder="Type your reply..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="image">Attach Image (Optional)</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="image" name="image" accept="image/*">
+                    <label class="custom-file-label" for="image">Choose file...</label>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/messages}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Messages
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Reply
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Update file input label with selected file name
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName || 'Choose file...');
+    });
+</script>
+</body>
+</html>

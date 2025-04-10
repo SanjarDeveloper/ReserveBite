@@ -1,7 +1,9 @@
 package com.example.reservebite.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Delivery {
@@ -11,7 +13,8 @@ public class Delivery {
     @ManyToOne
     private Order order;
     private String deliveryAddress;
-    private String deliveryTime;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime deliveryTime;
     private String deliveryFee;
     @ManyToOne
     private DeliveryPerson courier;
@@ -36,11 +39,11 @@ public class Delivery {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public String getDeliveryTime() {
+    public LocalDateTime getDeliveryTime() {
         return deliveryTime;
     }
 
-    public void setDeliveryTime(String deliveryTime) {
+    public void setDeliveryTime(LocalDateTime deliveryTime) {
         this.deliveryTime = deliveryTime;
     }
 

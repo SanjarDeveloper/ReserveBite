@@ -1,50 +1,191 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Restaurant</title>
-    <!-- Bootstrap CSS -->
+    <title>Edit Restaurant - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Edit Restaurant</h1>
-    <form th:action="@{/templates/admin/restaurants/update/{id}(id=${restaurant.id})}" th:object="${restaurant}" method="post">
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" id="name" th:field="*{name}" class="form-control" required/>
+<div class="container">
+    <h1 class="text-center mb-4"><i class="fas fa-utensils mr-2"></i>Edit Restaurant</h1>
+    <div class="card">
+        <div class="card-body">
+            <form th:action="@{/admin/restaurants/update/{id}(id=${restaurantForm.id})}" th:object="${restaurantForm}" method="post">
+                <div th:if="${error}" class="alert alert-danger">
+                    <span th:text="${error}"></span>
+                </div>
+
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <input type="text" class="form-control" id="address" th:field="*{address}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="text" class="form-control" id="phone" th:field="*{phone}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="totalTables">Total Tables:</label>
+                    <input type="number" class="form-control" id="totalTables" th:field="*{totalTables}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cuisineId">Cuisine:</label>
+                    <select class="form-control" id="cuisineId" th:field="*{cuisineId}" required>
+                        <option value="">Select Cuisine</option>
+                        <option th:each="cuisine : ${cuisines}" th:value="${cuisine.id}" th:text="${cuisine.name}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="coordinates">Location (Latitude, Longitude):</label>
+                    <input type="text" class="form-control" id="coordinates" th:field="*{coordinates}" readonly>
+                    <small class="form-text text-muted">Click on the map to set the restaurant's location.</small>
+                </div>
+
+                <div id="map"></div>
+
+                <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-save"></i> Update Restaurant</button>
+                <a th:href="@{/admin/restaurants}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Back</a>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="address">Address:</label>
-            <input type="text" id="address" th:field="*{address}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="phone">Phone:</label>
-            <input type="tel" id="phone" th:field="*{phone}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" th:field="*{email}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="totalTables">Total Tables:</label>
-            <input type="number" id="totalTables" th:field="*{totalTables}" class="form-control" required/>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" id="active" th:field="*{active}" class="form-check-input"/>
-            <label for="active" class="form-check-label">Active</label>
-        </div>
-        <div class="form-group">
-            <label for="cuisine">Cuisine:</label>
-            <select id="cuisine" th:field="*{cuisine}" class="form-control" required>
-                <option th:each="cuisine : ${cuisines}" th:value="${cuisine.id}" th:text="${cuisine.name}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-        <a th:href="@{/templates/admin/restaurants}" class="btn btn-secondary mt-3">Back to Restaurants List</a>
-    </form>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Google Maps API -->
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPQiymSL5-mKRSslSeQ8q8iPYDplyqUGg&callback=initMap">
+</script>
+
+<script th:inline="javascript">
+    let map;
+    let marker;
+
+    function initMap() {
+        // Initialize the map with a default center (e.g., Tashkent City)
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 10,
+            center: { lat: 41.311081, lng: 69.240562 }
+        });
+
+        // Get the existing coordinates from the restaurant
+        const coordinates = /*[[${restaurantForm.coordinates}]]*/ null;
+        if (coordinates) {
+            const [lat, lng] = coordinates.split(',').map(coord => parseFloat(coord.trim()));
+            const restaurantLocation = { lat, lng };
+
+            // Center the map on the restaurant's location
+            map.setCenter(restaurantLocation);
+
+            // Add a marker at the restaurant's location
+            marker = new google.maps.Marker({
+                position: restaurantLocation,
+                map: map,
+                title: 'Restaurant Location'
+            });
+        }
+
+        // Add a click event listener to the map
+        map.addListener('click', (event) => {
+            const lat = event.latLng.lat();
+            const lng = event.latLng.lng();
+            const newCoordinates = `${lat},${lng}`;
+
+            // Update the coordinates input field
+            document.getElementById('coordinates').value = newCoordinates;
+
+            // Remove the previous marker if it exists
+            if (marker) {
+                marker.setMap(null);
+            }
+
+            // Add a new marker at the clicked location
+            marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                title: 'Restaurant Location'
+            });
+        });
+    }
+</script>
 </body>
 </html>

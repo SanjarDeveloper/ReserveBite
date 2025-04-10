@@ -21,8 +21,9 @@ public class MenuCategoryService {
     }
 
     //get one menuCategory by ID
-    public MenuCategory getMenuCategoryById(Long id){
-        return menuCategoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No such MenuCategory with this ID"));
+    public MenuCategory getMenuCategoryById(Long id) {
+        return menuCategoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MenuCategory not found with id: " + id));
     }
 
     //Save menuCategory

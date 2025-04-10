@@ -2,6 +2,7 @@ package com.example.reservebite.service;
 
 import com.example.reservebite.entity.OrderItem;
 import com.example.reservebite.repository.OrderItemRepository;
+import com.example.reservebite.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.NoSuchElementException;
 @Service
 public class OrderItemService {
     private final OrderItemRepository orderItemRepository;
-
 
     public OrderItemService(OrderItemRepository orderItemRepository) {
         this.orderItemRepository = orderItemRepository;
@@ -30,5 +30,11 @@ public class OrderItemService {
 
     public void deleteOrderItem(Long orderItemId){
         orderItemRepository.deleteById(orderItemId);
+    }
+    public void deleteOrderItemByOrderId(Long orderId){
+        List<OrderItem> byOrderId = orderItemRepository.findByOrderId(orderId);
+        for (OrderItem orderItem : byOrderId) {
+            orderItemRepository.deleteById(orderItem.getId());
+        }
     }
 }

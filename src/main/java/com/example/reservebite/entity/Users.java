@@ -10,6 +10,7 @@ import java.util.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Data // Using Lombok to generate getters, setters, etc.
 public class Users implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class Users implements UserDetails {
     private BigDecimal balance;
     private Boolean isActive;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE}) // Changed to EAGER for role loading
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -46,7 +47,41 @@ public class Users implements UserDetails {
         this.roles = roles;
     }
 
-    // Getters and Setters
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Adjust based on your requirements
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Adjust based on your requirements
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Adjust based on your requirements
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive != null && isActive; // Use isActive to determine if the user is enabled
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,21 +98,8 @@ public class Users implements UserDetails {
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setPassword(String password) {
@@ -112,8 +134,8 @@ public class Users implements UserDetails {
         return isActive;
     }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    public void setIsActive(Boolean active) {
+        isActive = active;
     }
 
     public Set<Role> getRoles() {
@@ -123,4 +145,5 @@ public class Users implements UserDetails {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
 }

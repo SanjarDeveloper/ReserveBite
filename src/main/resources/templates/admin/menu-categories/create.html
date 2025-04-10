@@ -1,34 +1,180 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Menu Category</title>
-    <!-- Bootstrap CSS -->
+    <title>Create Menu Category - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 500px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .form-check-label {
+            color: #2c3e50;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Add New Menu Category</h1>
-    <form th:action="@{/templates/admin/menu-categories}" th:object="${menuCategory}" method="post">
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" id="name" th:field="*{name}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label>Choose Status:</label><br>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" id="active" name="active" th:value="true" th:field="*{active}" th:checked="${isActive}"/>
-                <label class="form-check-label" for="active">Active</label>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Form Content -->
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4"><i class="fas fa-list-alt mr-2"></i>Add New Menu Category</h1>
+        <form th:action="@{/admin/menu-categories}" th:object="${menuCategory}" method="post">
+            <!-- Name -->
+            <div class="form-group">
+                <label for="name">Name</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                    </div>
+                    <input type="text" id="name" th:field="*{name}" class="form-control" required />
+                </div>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" id="inactive" name="active" th:value="false" th:field="*{active}" th:checked="${!isActive}"/>
-                <label class="form-check-label" for="inactive">Inactive</label>
+
+            <!-- Status -->
+            <div class="form-group">
+                <label>Choose Status</label>
+                <div class="d-flex">
+                    <div class="form-check form-check-inline mr-4">
+                        <input class="form-check-input" type="radio" id="active" name="active" th:value="true" th:field="*{active}" th:checked="${menuCategory.active}" />
+                        <label class="form-check-label" for="active"><i class="fas fa-check-circle mr-1"></i>Active</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="inactive" name="active" th:value="false" th:field="*{active}" th:checked="${!menuCategory.active}" />
+                        <label class="form-check-label" for="inactive"><i class="fas fa-times-circle mr-1"></i>Inactive</label>
+                    </div>
+                </div>
             </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/menu-categories}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Save
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

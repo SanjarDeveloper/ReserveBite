@@ -1,9 +1,6 @@
 package com.example.reservebite.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Cuisine {
@@ -12,6 +9,7 @@ public class Cuisine {
     private Long id;
 
     private String name;
+    @Column(name = "is_active")
     private boolean isActive;
 
     public Long getId() {

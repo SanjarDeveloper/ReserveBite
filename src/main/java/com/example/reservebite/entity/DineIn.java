@@ -16,7 +16,9 @@ public class DineIn {
     private Order order;
 
     @ManyToOne
-    private Users waiterId;
+    private Users waiter;
+
+    private String status;
 
     public Long getId() {
         return id;
@@ -39,10 +41,30 @@ public class DineIn {
     }
 
     public Users getWaiterId() {
-        return waiterId;
+        return waiter;
     }
 
     public void setWaiterId(Users waiterId) {
-        this.waiterId = waiterId;
+        this.waiter = waiterId;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Users getWaiter() {
+        return waiter;
+    }
+
+    public void setWaiter(Users waiter) {
+        this.waiter = waiter;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

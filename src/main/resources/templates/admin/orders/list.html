@@ -1,47 +1,403 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Orders</title>
-    <!-- Bootstrap CSS -->
+    <title>Orders List - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .table-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: #2c3e50;
+            color: #fff;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background: #f9f9f9;
+        }
+
+        .search-form {
+            margin-bottom: 20px;
+        }
+
+        .search-form .input-group {
+            max-width: 400px;
+        }
+
+        .sort-link {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sort-link:hover {
+            color: #ddd;
+            text-decoration: none;
+        }
+
+        .sort-icon {
+            margin-left: 5px;
+        }
+
+        /* Additional Styles for Kanban and Card Views */
+        .kanban-column {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 300px;
+            margin-right: 15px;
+        }
+
+        .kanban-card {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .view-switcher .btn {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Orders</h1>
-    <div class="mb-3">
-        <a th:href="@{/templates/admin/orders/new}" class="btn btn-primary">Add New Order</a>
-        <a href="/admin/dashboard" class="btn btn-secondary">Go Back</a>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
     </div>
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Order Date</th>
-            <th>Total Amount</th>
-            <th>Status</th>
-            <th>Fulfillment Type</th>
-            <th>Customer</th>
-            <th>Restaurant</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="order : ${orders}">
-            <td th:text="${order.orderDate}"></td>
-            <td th:text="${order.totalAmount}"></td>
-            <td th:text="${order.status}"></td>
-            <td th:text="${order.fulfillmentType}"></td>
-            <td th:text="${order.customer.name}"></td>
-            <td th:text="${order.restaurant.name}"></td>
-            <td>
-                <a th:href="@{/templates/admin/orders/edit/{id}(id=${order.id})}" class="btn btn-warning btn-sm">Edit</a>
-                <a th:href="@{/templates/admin/orders/delete/{id}(id=${order.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+</nav>
+
+<!-- Table Content -->
+<div class="container">
+    <div class="table-container">
+        <h1 class="text-center mb-4"><i class="fas fa-shopping-cart mr-2"></i>Orders List</h1>
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <div class="view-switcher">
+                <button class="btn btn-outline-primary" onclick="showView('list')"><i class="fas fa-list"></i> List View</button>
+                <button class="btn btn-outline-primary" onclick="showView('kanban')"><i class="fas fa-columns"></i> Kanban Board</button>
+                <button class="btn btn-outline-primary" onclick="showView('card')"><i class="fas fa-th"></i> Card View</button>
+            </div>
+            <!-- Search Form -->
+            <form th:action="@{/admin/orders/all}" method="get" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search by customer, restaurant, or status"
+                           th:value="${search}">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </div>
+            </form>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>Go Back
+            </a>
+        </div>
+
+        <!-- List View (Default) -->
+        <div id="list-view" class="view">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        <a th:href="@{/admin/orders/all(sortBy='orderDate',sortDir=${currentSortBy == 'orderDate' and currentSortDir == 'asc' ? 'desc' : 'asc'},search=${search})}" class="sort-link">
+                            Order Date
+                            <i th:if="${currentSortBy == 'orderDate' and currentSortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                            <i th:if="${currentSortBy == 'orderDate' and currentSortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                            <i th:if="${currentSortBy != 'orderDate'}" class="fas fa-sort sort-icon"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/admin/orders/all(sortBy='totalAmount',sortDir=${currentSortBy == 'totalAmount' and currentSortDir == 'asc' ? 'desc' : 'asc'},search=${search})}" class="sort-link">
+                            Total Amount
+                            <i th:if="${currentSortBy == 'totalAmount' and currentSortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                            <i th:if="${currentSortBy == 'totalAmount' and currentSortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                            <i th:if="${currentSortBy != 'totalAmount'}" class="fas fa-sort sort-icon"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/admin/orders/all(sortBy='status',sortDir=${currentSortBy == 'status' and currentSortDir == 'asc' ? 'desc' : 'asc'},search=${search})}" class="sort-link">
+                            Status
+                            <i th:if="${currentSortBy == 'status' and currentSortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                            <i th:if="${currentSortBy == 'status' and currentSortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                            <i th:if="${currentSortBy != 'status'}" class="fas fa-sort sort-icon"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/admin/orders/all(sortBy='fulfillmentType',sortDir=${currentSortBy == 'fulfillmentType' and currentSortDir == 'asc' ? 'desc' : 'asc'},search=${search})}" class="sort-link">
+                            Fulfillment Type
+                            <i th:if="${currentSortBy == 'fulfillmentType' and currentSortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                            <i th:if="${currentSortBy == 'fulfillmentType' and currentSortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                            <i th:if="${currentSortBy != 'fulfillmentType'}" class="fas fa-sort sort-icon"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/admin/orders/all(sortBy='customerName',sortDir=${currentSortBy == 'customerName' and currentSortDir == 'asc' ? 'desc' : 'asc'},search=${search})}" class="sort-link">
+                            Customer
+                            <i th:if="${currentSortBy == 'customerName' and currentSortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                            <i th:if="${currentSortBy == 'customerName' and currentSortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                            <i th:if="${currentSortBy != 'customerName'}" class="fas fa-sort sort-icon"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/admin/orders/all(sortBy='restaurantName',sortDir=${currentSortBy == 'restaurantName' and currentSortDir == 'asc' ? 'desc' : 'asc'},search=${search})}" class="sort-link">
+                            Restaurant
+                            <i th:if="${currentSortBy == 'restaurantName' and currentSortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                            <i th:if="${currentSortBy == 'restaurantName' and currentSortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                            <i th:if="${currentSortBy != 'restaurantName'}" class="fas fa-sort sort-icon"></i>
+                        </a>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderDate}"></td>
+                    <td th:text="${order.totalAmount}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td th:text="${order.fulfillmentType.getDisplayName()}"></td>
+                    <td th:text="${order.customerName}"></td>
+                    <td th:text="${order.restaurantName}"></td>
+                    <td>
+                        <a th:href="@{/admin/orders/edit/{id}(id=${order.id})}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i>Edit
+                        </a>
+                        <a th:href="@{/admin/orders/delete/{id}(id=${order.id})}" class="btn btn-danger btn-sm"
+                           onclick="return confirm('Are you sure you want to delete this order?')">
+                            <i class="fas fa-trash"></i>Delete
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(orders)}">
+                    <td colspan="7" class="text-center">No orders found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Kanban Board View -->
+        <div id="kanban-view" class="view" style="display: none;"></div>
+
+        <!-- Card View -->
+        <div id="card-view" class="view" style="display: none;"></div>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
+<!-- JavaScript Dependencies -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Inline Orders Data and View Switching Logic -->
+<script th:inline="javascript">
+    const orders = /*[[${orders}]]*/ [];
+
+    function showView(view) {
+        document.getElementById('list-view').style.display = view === 'list' ? 'block' : 'none';
+        document.getElementById('kanban-view').style.display = view === 'kanban' ? 'block' : 'none';
+        document.getElementById('card-view').style.display = view === 'card' ? 'block' : 'none';
+
+        if (view === 'kanban') {
+            renderKanban();
+        } else if (view === 'card') {
+            renderCardView();
+        }
+    }
+
+    function renderKanban() {
+        const kanbanView = document.getElementById('kanban-view');
+        kanbanView.innerHTML = '';
+
+        // Get unique statuses
+        const statuses = [...new Set(orders.map(order => order.status))];
+
+        // Create Kanban container
+        const kanbanContainer = document.createElement('div');
+        kanbanContainer.className = 'd-flex flex-nowrap overflow-auto';
+
+        statuses.forEach(status => {
+            const column = document.createElement('div');
+            column.className = 'kanban-column';
+            column.innerHTML = `<h3>${status}</h3>`;
+
+            const ordersInStatus = orders.filter(order => order.status === status);
+            ordersInStatus.forEach(order => {
+                const card = document.createElement('div');
+                card.className = 'kanban-card';
+                card.innerHTML = `
+                    <h5>Order #${order.id}</h5>
+                    <p><strong>Customer:</strong> ${order.customerName}</p>
+                    <p><strong>Restaurant:</strong> ${order.restaurantName}</p>
+                    <p><strong>Total:</strong> $${order.totalAmount.toFixed(2)}</p>
+                `;
+                column.appendChild(card);
+            });
+
+            kanbanContainer.appendChild(column);
+        });
+
+        kanbanView.appendChild(kanbanContainer);
+    }
+
+    function renderCardView() {
+        const cardView = document.getElementById('card-view');
+        cardView.innerHTML = '';
+
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        orders.forEach(order => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-4';
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+            cardBody.innerHTML = `
+                <h5 class="card-title">Order #${order.id}</h5>
+                <p class="card-text"><strong>Date:</strong> ${order.orderDate}</p>
+                <p class="card-text"><strong>Customer:</strong> ${order.customerName}</p>
+                <p class="card-text"><strong>Restaurant:</strong> ${order.restaurantName}</p>
+                <p class="card-text"><strong>Total:</strong> $${order.totalAmount.toFixed(2)}</p>
+                <p class="card-text"><strong>Status:</strong> ${order.status}</p>
+                <p class="card-text"><strong>Fulfillment Type:</strong> ${order.fulfillmentType}</p>
+                <a href="/admin/orders/edit/${order.id}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                <a href="/admin/orders/delete/${order.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i> Delete</a>
+            `;
+
+            card.appendChild(cardBody);
+            col.appendChild(card);
+            row.appendChild(col);
+        });
+
+        cardView.appendChild(row);
+    }
+
+    // Set default view to List View on page load
+    window.onload = function() {
+        showView('list');
+    };
+</script>
 </body>
 </html>

@@ -21,8 +21,9 @@ public class MeasurementService {
     }
 
     //get one measurement by ID
-    public Measurement getMeasurementById(Long id){
-        return measurementRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No such Measurement with this ID"));
+    public Measurement getMeasurementById(Long id) {
+        return measurementRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Measurement not found with id: " + id));
     }
 
     //Save measurement

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Profile - ReserveBite</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .profile-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .alert-success {
+            border-radius: 10px;
+            background: #e8f5e9;
+            color: #27ae60;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/user/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/user/profile}"><i class="fas fa-user mr-1"></i>Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Profile Content -->
+<div class="container">
+    <div class="profile-container">
+        <h1 class="text-center mb-4"><i class="fas fa-user-circle mr-2"></i>Your Profile</h1>
+
+        <!-- Success Message (if profile updated) -->
+        <div th:if="${updated}" class="alert alert-success text-center">
+            <i class="fas fa-check-circle mr-2"></i>Profile updated successfully!
+        </div>
+
+        <!-- Profile Form -->
+        <form th:action="@{/user/profile}" th:object="${user}" method="post">
+            <!-- Name -->
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                    </div>
+                    <input type="text" id="name" th:field="*{name}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" id="username" th:field="*{username}" class="form-control" required readonly/>
+                </div>
+                <small class="form-text text-muted">Username cannot be changed.</small>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    </div>
+                    <input type="tel" id="phone" th:field="*{phone}" class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">New Password (leave blank to keep current)</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    </div>
+                    <input type="password" id="password" th:field="*{password}" class="form-control"/>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{/user/dashboard}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

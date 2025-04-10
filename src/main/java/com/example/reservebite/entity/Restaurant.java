@@ -20,6 +20,7 @@ public class Restaurant {
     private Cuisine cuisine;
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Menu> menus;
+    private String coordinates;
 
     public Long getId() {
         return id;
@@ -65,12 +66,14 @@ public class Restaurant {
         this.totalTables = totalTables;
     }
 
-    public Boolean getActive() {
+    // Renamed getter to follow JavaBeans convention
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
+    // Renamed setter to follow JavaBeans convention
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public Cuisine getCuisine() {
@@ -88,5 +91,11 @@ public class Restaurant {
     public void setMenus(List<Menu> menus) {
         this.menus = menus;
     }
-}
+    public String getCoordinates() {
+        return coordinates;
+    }
 
+    public void setCoordinates(String coordinates) {
+        this.coordinates = coordinates;
+    }
+}

@@ -1,42 +1,295 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Payment</title>
-    <!-- Bootstrap CSS -->
+    <title>Create Payment - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Create Payment</h1>
-    <form th:action="@{/templates/admin/payments}" th:object="${payment}" method="post">
-        <div class="form-group">
-            <label for="paymentMethod">Payment Method:</label>
-            <input type="text" id="paymentMethod" th:field="*{paymentMethod}" class="form-control" required/>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Form Content -->
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4"><i class="fas fa-money-check-alt mr-2"></i>Create Payment</h1>
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
         </div>
-        <div class="form-group">
-            <label for="paymentStatus">Payment Status:</label>
-            <input type="text" id="paymentStatus" th:field="*{paymentStatus}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="paymentDateTime">Payment Date & Time:</label>
-            <input type="datetime-local" id="paymentDateTime" th:field="*{paymentDateTime}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" step="0.01" th:field="*{amount}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="order">Order ID:</label>
-            <select id="order" th:field="*{order}" class="form-control" required>
-                <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.id}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-    </form>
-    <a th:href="@{/templates/admin/payments}" class="btn btn-secondary mt-3">Back to List</a>
+        <form th:action="@{/admin/payments}" th:object="${payment}" method="post">
+            <!-- Payment Method -->
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+                    </div>
+                    <select id="paymentMethod" th:field="*{paymentMethod}" class="form-control" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="CREDIT_CARD">Credit Card</option>
+                        <option value="DEBIT_CARD">Debit Card</option>
+                        <option value="CASH">Cash</option>
+                        <option value="ONLINE">Online Payment</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Payment Status -->
+            <div class="form-group">
+                <label for="paymentStatus">Payment Status</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                    </div>
+                    <select id="paymentStatus" th:field="*{paymentStatus}" class="form-control" required>
+                        <option value="">Select Payment Status</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="FAILED">Failed</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Payment Date & Time -->
+            <div class="form-group">
+                <label for="paymentDateTime">Payment Date & Time</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                    <input type="datetime-local" id="paymentDateTime" th:field="*{paymentDateTime}"
+                           th:value="${payment.paymentDateTime != null ? #temporals.format(payment.paymentDateTime, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                           class="form-control" required />
+                </div>
+            </div>
+
+            <!-- Order -->
+            <div class="form-group">
+                <label for="order">Order</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+                    </div>
+                    <select id="order" name="orderId" class="form-control" required>
+                        <option value="">Select Order</option>
+                        <option th:each="order : ${orders}"
+                                th:value="${order.id}"
+                                th:data-amount="${order.totalAmount}"
+                                th:text="'Order #' + ${order.id} + ' - ' + ${order.customer.user.name} + ' at ' + ${order.restaurant.name} + ' (' + ${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')} + ')'+ ' Amount: ' + ${order.totalAmount}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                    </div>
+                    <input type="number" id="amount" step="0.01" class="form-control" readonly />
+                    <!-- Hidden input to submit the amount -->
+                    <input type="hidden" id="amountHidden" name="amount" />
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/payments}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Save
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paymentDateTimeInput = document.getElementById('paymentDateTime');
+        const amountInput = document.getElementById('amount');
+        const amountHiddenInput = document.getElementById('amountHidden');
+        const orderSelect = document.getElementById('order');
+        const form = document.querySelector('form');
+
+        // Update Amount field when Order is selected
+        orderSelect.addEventListener('change', function () {
+            const selectedOption = orderSelect.options[orderSelect.selectedIndex];
+            const totalAmount = selectedOption.getAttribute('data-amount') || '';
+            amountInput.value = totalAmount;
+            amountHiddenInput.value = totalAmount; // Set the hidden input value
+        });
+
+        // Payment Date Validation
+        const dateError = document.createElement('small');
+        dateError.className = 'form-text text-danger';
+        dateError.id = 'dateError';
+        dateError.textContent = 'Payment date cannot be in the past.';
+        dateError.style.display = 'none';
+        paymentDateTimeInput.parentElement.appendChild(dateError);
+
+        const now = new Date();
+        const minDate = now.toISOString().slice(0, 16);
+        paymentDateTimeInput.setAttribute('min', minDate);
+
+        form.addEventListener('submit', function (event) {
+            const selectedDate = new Date(paymentDateTimeInput.value);
+            if (selectedDate < now) {
+                event.preventDefault();
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+            }
+        });
+
+        paymentDateTimeInput.addEventListener('change', function () {
+            const selectedDate = new Date(paymentDateTimeInput.value);
+            if (selectedDate < now) {
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+            }
+        });
+
+        // Amount Validation (optional, since it's read-only)
+        const amountError = document.createElement('small');
+        amountError.className = 'form-text text-danger';
+        amountError.id = 'amountError';
+        amountError.textContent = 'Amount must be greater than 0.';
+        amountError.style.display = 'none';
+        amountInput.parentElement.appendChild(amountError);
+
+        form.addEventListener('submit', function (event) {
+            const amount = parseFloat(amountInput.value);
+            if (amount <= 0) {
+                event.preventDefault();
+                amountError.style.display = 'block';
+            } else {
+                amountError.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>

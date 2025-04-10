@@ -1,42 +1,299 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Payment</title>
-    <!-- Bootstrap CSS -->
+    <title>Edit Payment - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px W solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Edit Payment</h1>
-    <form th:action="@{/templates/admin/payments/update/{id}(id=${payment.id})}" th:object="${payment}" method="post">
-        <div class="form-group">
-            <label for="paymentMethod">Payment Method:</label>
-            <input type="text" id="paymentMethod" th:field="*{paymentMethod}" class="form-control" required/>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i
+                        class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Form Content -->
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4"><i class="fas fa-money-check-alt mr-2"></i>Edit Payment</h1>
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
         </div>
-        <div class="form-group">
-            <label for="paymentStatus">Payment Status:</label>
-            <input type="text" id="paymentStatus" th:field="*{paymentStatus}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="paymentDateTime">Payment Date & Time:</label>
-            <input type="datetime-local" id="paymentDateTime" th:field="*{paymentDateTime}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" step="0.01" th:field="*{amount}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="order">Order ID:</label>
-            <select id="order" th:field="*{order}" class="form-control" required>
-                <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.id}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-        <a th:href="@{/templates/admin/payments}" class="btn btn-secondary mt-3">Back to List</a>
-    </form>
+        <form th:action="@{/admin/payments/update/{id}(id=${payment.id})}" th:object="${payment}" method="post">
+            <!-- Payment Method -->
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+                    </div>
+                    <select id="paymentMethod" th:field="*{paymentMethod}" class="form-control" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="CREDIT_CARD">Credit Card</option>
+                        <option value="DEBIT_CARD">Debit Card</option>
+                        <option value="CASH">Cash</option>
+                        <option value="ONLINE">Online Payment</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Payment Status -->
+            <div class="form-group">
+                <label for="paymentStatus">Payment Status</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                    </div>
+                    <select id="paymentStatus" th:field="*{paymentStatus}" class="form-control" required>
+                        <option value="">Select Payment Status</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="FAILED">Failed</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Payment Date & Time -->
+            <div class="form-group">
+                <label for="paymentDateTime">Payment Date & Time</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                    <input type="datetime-local" id="paymentDateTime" name="paymentDateTime"
+                           th:value="${payment.paymentDateTime != null ? #temporals.format(payment.paymentDateTime, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                           class="form-control" required/>
+                </div>
+            </div>
+
+            <!-- Order (Non-Editable) -->
+            <div class="form-group">
+                <label for="order">Order</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+                    </div>
+                    <div class="form-control" style="background-color: #f5f5f5;">
+                        <span th:text="${payment.order != null ? 'Order #' + payment.order.id + ' - ' + payment.order.customer.user.name + ' at ' + payment.order.restaurant.name + ' (' + #temporals.format(payment.order.orderDate, 'yyyy-MM-dd HH:mm') + ') Amount: ' + payment.order.totalAmount : 'No Order Assigned'}"></span>
+                    </div>
+                </div>
+                <!-- Hidden input to ensure the order ID is submitted -->
+                <input type="hidden" name="orderId" th:value="${payment.order != null ? payment.order.id : ''}"/>
+            </div>
+
+            <!-- Amount -->
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                    </div>
+                    <input type="number" id="amount" name="amount" step="0.01"
+                           th:value="${payment.amount}" class="form-control" readonly required/>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/payments}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Update
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    // Create a mapping of order IDs to their totalAmount values
+    const orderAmounts = {
+    <th:block th:each="order : ${orders}">
+        "
+        <th:utext>${order.id}</th:utext>
+        ": <th:utext>${order.totalAmount}</th:utext>
+        <th:utext th:unless="${orderStat.last}">,</th:utext>
+    </th:block>
+    }
+    ;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const orderSelect = document.getElementById('order');
+        const amountInput = document.getElementById('amount');
+        const paymentDateTimeInput = document.getElementById('paymentDateTime');
+        const form = document.querySelector('form');
+
+        // Function to update the Amount field based on the selected Order
+        function updateAmount() {
+            const selectedOrderId = orderSelect.value;
+            if (selectedOrderId && orderAmounts[selectedOrderId]) {
+                amountInput.value = orderAmounts[selectedOrderId];
+            } else {
+                amountInput.value = ''; // Clear the amount if no order is selected
+            }
+        }
+
+        // Update the Amount field when the Order changes
+        orderSelect.addEventListener('change', updateAmount);
+
+        // Set the initial Amount value based on the pre-selected Order
+        updateAmount();
+
+        // Payment Date Validation
+        const dateError = document.createElement('small');
+        dateError.className = 'form-text text-danger';
+        dateError.id = 'dateError';
+        dateError.textContent = 'Payment date cannot be in the past.';
+        dateError.style.display = 'none';
+        paymentDateTimeInput.parentElement.appendChild(dateError);
+
+        const now = new Date();
+        const minDate = now.toISOString().slice(0, 16);
+        paymentDateTimeInput.setAttribute('min', minDate);
+
+        form.addEventListener('submit', function (event) {
+            const selectedDate = new Date(paymentDateTimeInput.value);
+            if (selectedDate < now) {
+                event.preventDefault();
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+            }
+        });
+
+        paymentDateTimeInput.addEventListener('change', function () {
+            const selectedDate = new Date(paymentDateTimeInput.value);
+            if (selectedDate < now) {
+                dateError.style.display = 'block';
+            } else {
+                dateError.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>

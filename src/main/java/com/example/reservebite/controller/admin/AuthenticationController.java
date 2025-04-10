@@ -4,6 +4,8 @@ import com.example.reservebite.entity.Users;
 import com.example.reservebite.repository.RoleRepository;
 import com.example.reservebite.repository.UsersRepository;
 import com.example.reservebite.service.UsersService;
+import com.example.reservebite.service.UsersServiceImpl;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,27 +18,15 @@ public class AuthenticationController {
     private final UsersRepository usersRepository;
     private final RoleRepository roleRepository;
 
-    public AuthenticationController(UsersService usersService,
-                                    UsersRepository usersRepository,
-                                    RoleRepository roleRepository) {
+    public AuthenticationController(@Lazy UsersService usersService, UsersRepository usersRepository, RoleRepository roleRepository) {
         this.usersService = usersService;
         this.usersRepository = usersRepository;
         this.roleRepository = roleRepository;
     }
 
-
     @GetMapping("/login")
     public String login() {
         return "auth/login";
-    }
-
-    @PostMapping("/login")
-    public String loginUser(@ModelAttribute("user") Users user) {
-        if (usersService.checkCredentials(user)) {
-            return "home";
-        } else {
-          return "redirect:/login";
-        }
     }
 
     @GetMapping("/register")
@@ -47,12 +37,14 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") Users user, Model model) {
-
         if (usersService.usernameExists(user.getUsername())) {
             model.addAttribute("usernameExists", true);
             return "auth/register";
         }
-        usersService.saveUser(user);
+        // Save the user without encoding the password
+        Users savedUser = usersService.saveUser(user);
+        // Encode the password explicitly
+        ((UsersServiceImpl) usersService).updatePassword(savedUser, user.getPassword());
         return "redirect:/login";
     }
 }

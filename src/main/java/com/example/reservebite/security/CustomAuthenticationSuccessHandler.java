@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -28,6 +29,10 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return "/admin/dashboard";
         } else if (authorities.contains("ROLE_USER")) {
             return "/user/dashboard";
+        } else if (authorities.contains("ROLE_COURIER")) {
+            return "/courier/dashboard"; // Redirect couriers to their dashboard
+        } else if (authorities.contains("ROLE_WAITER")) {
+            return "/waiter/dashboard";
         } else {
             throw new IllegalStateException();
         }

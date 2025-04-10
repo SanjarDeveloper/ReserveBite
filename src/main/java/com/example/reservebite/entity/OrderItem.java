@@ -1,33 +1,44 @@
 package com.example.reservebite.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "order_items")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    @JsonManagedReference
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    private Integer quantity;
 
+    private Double price;
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public Menu getMenu() {
@@ -38,11 +49,19 @@ public class OrderItem {
         this.menu = menu;
     }
 
-    public Order getOrder() {
-        return order;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

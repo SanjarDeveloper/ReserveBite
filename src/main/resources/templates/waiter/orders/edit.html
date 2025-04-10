@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Order - ReserveBite</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-top: 80px;
+        }
+
+        h1, h3 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .order-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: #2c3e50;
+            color: #fff;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background: #f9f9f9;
+        }
+
+        .menu-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .menu-item h5 {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/waiter/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Order Edit Content -->
+<div class="container">
+    <div class="order-container">
+        <h1 class="text-center mb-4"><i class="fas fa-shopping-cart mr-2"></i>Edit Order #[[${order.id}]]</h1>
+
+        <!-- Current Order Items -->
+        <h3>Current Order Items</h3>
+        <table class="table table-bordered table-striped mb-5">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${order.orderItems}">
+                <td th:text="${item.menu.foodName}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${item.price}"></td>
+                <td>
+                    <form th:action="@{/waiter/orders/{id}/remove-item(id=${order.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="orderItemId" th:value="${item.id}">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>Remove
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${order.orderItems.isEmpty()}">
+                <td colspan="4" class="text-center">No items in this order yet.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Total Amount -->
+        <h4 class="text-right mb-4">Total Amount: $[[${order.totalAmount}]]</h4>
+
+        <!-- Menu Items to Add -->
+        <h3>Add Items to Order</h3>
+        <div th:each="menu : ${menuItems}" class="menu-item">
+            <div class="row">
+                <div class="col-md-8">
+                    <h5 th:text="${menu.foodName}"></h5>
+                    <p th:text="${menu.description}"></p>
+                    <p><strong>Price:</strong> $[[${menu.price}]]</p>
+                </div>
+                <div class="col-md-4 text-right">
+                    <form th:action="@{/waiter/orders/{id}/add-item(id=${order.id})}" method="post">
+                        <input type="hidden" name="menuId" th:value="${menu.id}">
+                        <div class="form-group">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" name="quantity" class="form-control" min="1" value="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>Add to Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <a th:href="@{/waiter/dashboard}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+            <form th:action="@{/waiter/orders/{id}/complete(id=${order.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check mr-2"></i>Complete Order
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

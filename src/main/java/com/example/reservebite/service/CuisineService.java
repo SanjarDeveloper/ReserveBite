@@ -20,6 +20,10 @@ public class CuisineService {
         return cuisineRepository.findAll();
     }
 
+    public List<Cuisine> getAllActiveCuisines(){
+        return cuisineRepository.findAllByIsActiveTrue();
+    }
+
     //get one cuisine by ID
     public Cuisine getCuisineById(Long id){
         return cuisineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No such Cuisine with this ID"));

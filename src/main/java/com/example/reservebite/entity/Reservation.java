@@ -2,15 +2,17 @@ package com.example.reservebite.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime reservationDate;
     private Integer numberOfGuests;
     private String status;
@@ -20,8 +22,8 @@ public class Reservation {
     private Restaurant restaurant;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "user_id")
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "table_id")
@@ -67,12 +69,12 @@ public class Reservation {
         this.restaurant = restaurant;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Users getUser() {
+        return user;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(Users user) {
+        this.user = user;
     }
 
     public Table getTable() {

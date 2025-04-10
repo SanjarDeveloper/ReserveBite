@@ -1,10 +1,6 @@
 package com.example.reservebite.controller.admin;
 
 import com.example.reservebite.entity.DineIn;
-import com.example.reservebite.entity.Restaurant;
-import com.example.reservebite.repository.OrderRepository;
-import com.example.reservebite.repository.TableRepository;
-import com.example.reservebite.repository.UsersRepository;
 import com.example.reservebite.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

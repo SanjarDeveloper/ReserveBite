@@ -11,6 +11,8 @@ import java.util.Set;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     Role findByName(String name);
+
+    Role findRolesByUsersId(Long id);
     @Query("SELECT r FROM Role r WHERE r.isActive = true")
     List<Role> findActiveRoles();
 }

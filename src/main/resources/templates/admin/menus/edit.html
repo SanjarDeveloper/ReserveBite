@@ -1,58 +1,305 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Menu</title>
-    <!-- Bootstrap CSS -->
+    <title>Edit Menu - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: none;
+        }
+
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #6c7778;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Edit Menu</h1>
-    <form th:action="@{/templates/admin/menus/{id}(id=${menu.id})}" th:object="${menu}" method="post">
-        <div class="form-group">
-            <label for="foodName">Food Name:</label>
-            <input type="text" id="foodName" th:field="*{foodName}" class="form-control" required/>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Form Content -->
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4"><i class="fas fa-utensils mr-2"></i>Edit Menu</h1>
+        <!-- Display error message if any -->
+        <div th:if="${error != null}" class="error-message">
+            <p th:text="${error}"></p>
         </div>
-        <div class="form-group">
-            <label for="price">Price:</label>
-            <input type="number" id="price" th:field="*{price}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" th:field="*{quantity}" class="form-control" required/>
-        </div>
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <input type="text" id="description" th:field="*{description}" class="form-control" required/>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" id="isActive" th:field="*{isActive}" class="form-check-input"/>
-            <label for="isActive" class="form-check-label">Active</label>
-        </div>
-        <div class="form-group">
-            <label for="restaurant">Restaurant:</label>
-            <select id="restaurant" th:field="*{restaurant}" class="form-control" required>
-                <option th:each="restaurant : ${restaurants}" th:value="${restaurant.id}" th:text="${restaurant.name}"></option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="measurement">Measurement:</label>
-            <select id="measurement" th:field="*{measurement}" class="form-control" required>
-                <option th:each="measurement : ${measurements}" th:value="${measurement.id}" th:text="${measurement.name}"></option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="menuCategory">Food Category:</label>
-            <select id="menuCategory" th:field="*{menuCategory}" class="form-control" required>
-                <option th:each="menuCategory : ${menuCategories}" th:value="${menuCategory.id}" th:text="${menuCategory.name}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-        <a th:href="@{/templates/admin/menus}" class="btn btn-secondary mt-3">Back to List</a>
-    </form>
+        <form th:action="@{/admin/menus/{id}(id=${menuForm.id})}" th:object="${menuForm}" method="post" enctype="multipart/form-data">
+            <!-- Food Name -->
+            <div class="form-group">
+                <label for="foodName">Food Name</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-utensils"></i></span>
+                    </div>
+                    <input type="text" id="foodName" th:field="*{foodName}" class="form-control" required />
+                </div>
+            </div>
+
+            <!-- Price -->
+            <div class="form-group">
+                <label for="price">Price</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                    </div>
+                    <input type="number" id="price" step="0.01" th:field="*{price}" class="form-control" required />
+                </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-box"></i></span>
+                    </div>
+                    <input type="number" id="quantity" th:field="*{quantity}" class="form-control" required />
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label for="description">Description</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                    </div>
+                    <input type="text" id="description" th:field="*{description}" class="form-control" required />
+                </div>
+            </div>
+
+            <!-- Active Checkbox -->
+            <div class="form-check mb-4">
+                <input type="checkbox" id="isActive" th:field="*{isActive}" class="form-check-input" />
+                <label for="isActive" class="form-check-label"><i class="fas fa-check-circle mr-1"></i>Active</label>
+            </div>
+
+            <!-- Restaurant -->
+            <div class="form-group">
+                <label for="restaurant">Restaurant</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-store"></i></span>
+                    </div>
+                    <select id="restaurant" th:field="*{restaurantId}" class="form-control" required>
+                        <option value="">Select Restaurant</option>
+                        <option th:each="restaurant : ${restaurants}"
+                                th:value="${restaurant.id}"
+                                th:text="${restaurant.name}"
+                                th:selected="${menuForm.restaurantId == restaurant.id}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Measurement -->
+            <div class="form-group">
+                <label for="measurement">Measurement</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-ruler"></i></span>
+                    </div>
+                    <select id="measurement" th:field="*{measurementId}" class="form-control" required>
+                        <option value="">Select Measurement</option>
+                        <option th:each="measurement : ${measurements}"
+                                th:value="${measurement.id}"
+                                th:text="${measurement.name}"
+                                th:selected="${menuForm.measurementId == measurement.id}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Menu Category -->
+            <div class="form-group">
+                <label for="menuCategory">Food Category</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-list-alt"></i></span>
+                    </div>
+                    <select id="menuCategory" th:field="*{menuCategoryId}" class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option th:each="menuCategory : ${menuCategories}"
+                                th:value="${menuCategory.id}"
+                                th:text="${menuCategory.name}"
+                                th:selected="${menuForm.menuCategoryId == menuCategory.id}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Current Image (if exists) -->
+            <div class="form-group" th:if="${menuForm.id != null and menu.imageData != null}">
+                <label>Current Image</label>
+                <div>
+                    <img th:src="@{/admin/menus/image/{id}(id=${menuForm.id})}" alt="Current Food Image" style="max-width: 200px; border-radius: 10px;" />
+                </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="form-group">
+                <label for="image">Upload New Image (optional)</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-image"></i></span>
+                    </div>
+                    <input type="file" id="image" name="image" class="form-control" accept="image/*" />
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/menus}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Update
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<!-- Bootstrap JS -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script>
+    // Image preview before upload
+    document.getElementById('image').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.style.maxWidth = '200px';
+                preview.style.borderRadius = '10px';
+                preview.style.marginTop = '10px';
+                const existingPreview = document.getElementById('image-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                preview.id = 'image-preview';
+                event.target.parentElement.appendChild(preview);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 </body>
 </html>
