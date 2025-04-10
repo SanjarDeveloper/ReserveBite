@@ -2,6 +2,7 @@ package com.example.reservebite.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,8 @@ public class Restaurant {
     private String email;
     private Integer totalTables;
     private Boolean isActive;
+    private LocalTime openTime;  // e.g., 09:00
+    private LocalTime closeTime;
     @ManyToOne
     @JoinColumn(name = "cuisine_id")
     private Cuisine cuisine;
@@ -97,5 +100,25 @@ public class Restaurant {
 
     public void setCoordinates(String coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public LocalTime getOpenTime() {
+        return openTime;
+    }
+
+    public void setOpenTime(LocalTime openTime) {
+        this.openTime = openTime;
+    }
+
+    public LocalTime getCloseTime() {
+        return closeTime;
+    }
+
+    public void setCloseTime(LocalTime closeTime) {
+        this.closeTime = closeTime;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

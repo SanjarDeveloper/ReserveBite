@@ -1,5 +1,7 @@
 package com.example.reservebite.DTO;
 
+import java.time.LocalTime;
+
 public class RestaurantFormDTO {
     private Long id;
     private String name;
@@ -10,6 +12,8 @@ public class RestaurantFormDTO {
     private Boolean active;
     private Long cuisineId;
     private String coordinates;
+    private LocalTime openTime;  // New field
+    private LocalTime closeTime;
 
     // Getters and setters
     public Long getId() {
@@ -81,5 +85,21 @@ public class RestaurantFormDTO {
 
     public void setCoordinates(String coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public LocalTime getOpenTime() {
+        return openTime;
+    }
+
+    public void setOpenTime(LocalTime openTime) {
+        this.openTime = openTime;
+    }
+
+    public LocalTime getCloseTime() {
+        return closeTime;
+    }
+
+    public void setCloseTime(LocalTime closeTime) {
+        this.closeTime = closeTime;
     }
 }

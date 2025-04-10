@@ -1,7 +1,9 @@
 package com.example.reservebite.controller.admin;
 
 import com.example.reservebite.DTO.ReservationFormDTO;
+import com.example.reservebite.DTO.SlotDTO;
 import com.example.reservebite.entity.Reservation;
+import com.example.reservebite.entity.Restaurant;
 import com.example.reservebite.entity.Table;
 import com.example.reservebite.repository.ReservationRepository;
 import com.example.reservebite.service.*;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -219,6 +223,29 @@ public class ReservationController {
             return "admin/reservations/create";
         }
 
+        // Check if the slot is already reserved
+        List<Reservation> existingReservations = reservationRepository.findByTableIdAndDate(
+                reservationForm.getTableId(),
+                reservationForm.getReservationDate().toLocalDate()
+        );
+        LocalDateTime newStart = reservationForm.getReservationDate();
+        LocalDateTime newEnd = newStart.plusHours(1);
+
+        boolean isSlotTaken = existingReservations.stream()
+                .filter(r -> !"CANCELED".equals(r.getStatus()))
+                .anyMatch(r -> {
+                    LocalDateTime resStart = r.getReservationDate();
+                    LocalDateTime resEnd = resStart.plusHours(1);
+                    return newStart.isBefore(resEnd) && newEnd.isAfter(resStart);
+                });
+
+        if (isSlotTaken) {
+            model.addAttribute("error", "This table is already reserved for the selected time slot.");
+            model.addAttribute("users", usersService.getUsersWithRoleUser());
+            model.addAttribute("restaurants", restaurantService.getAllRestaurants());
+            return "admin/reservations/create";
+        }
+
         // Fetch managed entities and create the Reservation entity
         Reservation reservation = new Reservation();
         reservation.setReservationDate(reservationForm.getReservationDate());
@@ -231,7 +258,58 @@ public class ReservationController {
         reservationService.saveReservation(reservation);
         return "redirect:/admin/reservations";
     }
+    // New endpoint for available slots
+    @GetMapping("/available-slots")
+    @ResponseBody
+    public ResponseEntity<List<SlotDTO>> getAvailableSlots(
+            @RequestParam("restaurantId") Long restaurantId,
+            @RequestParam("tableId") Long tableId,
+            @RequestParam("date") String date) {
+        LocalDate localDate;
+        try {
+            localDate = LocalDate.parse(date);
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().build();
+        }
 
+        Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
+        if (restaurant == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        LocalTime openTime = restaurant.getOpenTime();
+        LocalTime closeTime = restaurant.getCloseTime();
+        List<Reservation> reservations = reservationRepository.findByTableIdAndDate(tableId, localDate);
+        LocalDateTime now = LocalDateTime.now();
+
+        List<SlotDTO> slots = new ArrayList<>();
+        LocalTime currentTime = openTime;
+
+        while (currentTime.isBefore(closeTime)) {
+            LocalDateTime slotStart = localDate.atTime(currentTime);
+            LocalDateTime slotEnd = slotStart.plusHours(1);
+
+            // Skip slots before the current time
+            if (slotStart.isBefore(now)) {
+                currentTime = currentTime.plusHours(1);
+                continue;
+            }
+
+            // Check if the slot overlaps with any existing reservation
+            boolean isReserved = reservations.stream()
+                    .filter(r -> !"CANCELED".equals(r.getStatus()))
+                    .anyMatch(r -> {
+                        LocalDateTime resStart = r.getReservationDate();
+                        LocalDateTime resEnd = resStart.plusHours(1);
+                        return slotStart.isBefore(resEnd) && slotEnd.isAfter(resStart);
+                    });
+
+            slots.add(new SlotDTO(currentTime.format(DateTimeFormatter.ofPattern("HH:mm")), !isReserved));
+            currentTime = currentTime.plusHours(1);
+        }
+
+        return ResponseEntity.ok(slots);
+    }
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Reservation reservation = reservationService.getReservationWithAssociations(id);
@@ -260,13 +338,13 @@ public class ReservationController {
     @PostMapping("/update/{id}")
     public String updateReservation(@PathVariable Long id, @ModelAttribute("reservationForm") ReservationFormDTO reservationForm, Model model) {
         // Validate required fields
-        if (reservationForm.getReservationDate() == null) {
-            model.addAttribute("error", "Reservation date is required.");
-            model.addAttribute("restaurants", restaurantService.getAllRestaurants());
-            model.addAttribute("tables", tableService.getAvailableTablesByRestaurantId(reservationForm.getRestaurantId()));
-            model.addAttribute("users", usersService.getUsersWithRoleUser());
-            return "admin/reservations/edit";
-        }
+//        if (reservationForm.getReservationDate() == null) {
+//            model.addAttribute("error", "Reservation date is required.");
+//            model.addAttribute("restaurants", restaurantService.getAllRestaurants());
+//            model.addAttribute("tables", tableService.getAvailableTablesByRestaurantId(reservationForm.getRestaurantId()));
+//            model.addAttribute("users", usersService.getUsersWithRoleUser());
+//            return "admin/reservations/edit";
+//        }
 
         if (reservationForm.getTableId() == null) {
             model.addAttribute("error", "Please select a table.");
@@ -277,13 +355,13 @@ public class ReservationController {
         }
 
         // Validate reservation date (not in the past)
-        if (reservationForm.getReservationDate().isBefore(LocalDateTime.now())) {
-            model.addAttribute("error", "Reservation date cannot be in the past.");
-            model.addAttribute("restaurants", restaurantService.getAllRestaurants());
-            model.addAttribute("tables", tableService.getAvailableTablesByRestaurantId(reservationForm.getRestaurantId()));
-            model.addAttribute("users", usersService.getUsersWithRoleUser());
-            return "admin/reservations/edit";
-        }
+//        if (reservationForm.getReservationDate().isBefore(LocalDateTime.now())) {
+//            model.addAttribute("error", "Reservation date cannot be in the past.");
+//            model.addAttribute("restaurants", restaurantService.getAllRestaurants());
+//            model.addAttribute("tables", tableService.getAvailableTablesByRestaurantId(reservationForm.getRestaurantId()));
+//            model.addAttribute("users", usersService.getUsersWithRoleUser());
+//            return "admin/reservations/edit";
+//        }
 
         // Validate number of guests
         if (reservationForm.getNumberOfGuests() < 1) {
@@ -296,13 +374,19 @@ public class ReservationController {
 
         // Update the existing Reservation entity
         Reservation reservation = reservationService.getReservationByID(id);
-        reservation.setReservationDate(reservationForm.getReservationDate()); // Update reservation date
+//        reservation.setReservationDate(reservationForm.getReservationDate()); // Update reservation date
         reservation.setNumberOfGuests(reservationForm.getNumberOfGuests());
         reservation.setStatus(reservationForm.getStatus());
         reservation.setTable(tableService.getTableByID(reservationForm.getTableId()));
         // Note: restaurant and user are not updated as they are non-editable
 
         reservationService.saveReservation(reservation);
+        return "redirect:/admin/reservations";
+    }
+
+    @GetMapping("/cancel/{id}")
+    public String cancelReservation(@PathVariable Long id) {
+        reservationService.cancelReservation(id);
         return "redirect:/admin/reservations";
     }
 
@@ -317,15 +401,22 @@ public class ReservationController {
     @ResponseBody
     public ResponseEntity<List<Table>> getAvailableTables(
             @RequestParam("restaurantId") Long restaurantId,
-            @RequestParam("reservationDate") String reservationDate) {
-        LocalDateTime dateTime;
-        try {
-            dateTime = LocalDateTime.parse(reservationDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().build();
+            @RequestParam(value = "reservationDate", required = false) String reservationDate) {
+        LocalDateTime dateTime = null;
+        if (reservationDate != null && !reservationDate.isEmpty()) {
+            try {
+                dateTime = LocalDateTime.parse(reservationDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            } catch (DateTimeParseException e) {
+                return ResponseEntity.badRequest().build();
+            }
         }
 
-        List<Table> availableTables = tableService.getAvailableTablesByRestaurantIdAndDate(restaurantId, dateTime);
-        return ResponseEntity.ok(availableTables);
+        List<Table> tables;
+        if (dateTime != null) {
+            tables = tableService.getAvailableTablesByRestaurantIdAndDate(restaurantId, dateTime);
+        } else {
+            tables = tableService.getTablesByRestaurantId(restaurantId); // Fetch all tables if no date
+        }
+        return ResponseEntity.ok(tables);
     }
 }

@@ -1,9 +1,13 @@
 package com.example.reservebite.DTO;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+
 import java.time.LocalDateTime;
 
 public class ReservationFormDTO {
     private Long id;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime reservationDate;
     private int numberOfGuests;
     private String status;
@@ -12,8 +16,18 @@ public class ReservationFormDTO {
     private Long tableId;
     private String userName; // New field for user name
     private String restaurantName; // New field for restaurant name
+    private String tableNumber;
 
     // Getters and setters
+
+    public String getTableNumber() {
+        return tableNumber;
+    }
+
+    public void setTableNumber(String tableNumber) {
+        this.tableNumber = tableNumber;
+    }
+
     public Long getId() {
         return id;
     }

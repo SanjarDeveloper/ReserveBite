@@ -16,7 +16,7 @@ public class OrderItem {
     @JsonManagedReference
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_id")
     private Menu menu;
 

@@ -35,7 +35,11 @@ public class ReservationService {
     public List<Reservation> getAllReservationsByUserId(Long userId) {
         return reservationRepository.findByUserId(userId);
     }
-
+    public void cancelReservation(Long reservationId) {
+        Reservation reservation = getReservationByID(reservationId);
+        reservation.setStatus("CANCELED");
+        reservationRepository.save(reservation);
+    }
 
     public void deleteReservation(Long reservationId){
         reservationRepository.deleteById(reservationId);

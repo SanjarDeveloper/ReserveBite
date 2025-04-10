@@ -287,6 +287,7 @@
                         </div>
                     </div>
                     <span th:if="${reservation.status == 'COMPLETED'}" class="text-muted">Completed</span>
+                    <span th:if="${reservation.status == 'CANCELLED'}" class="text-muted">Cancelled</span>
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(recentReservations)}">

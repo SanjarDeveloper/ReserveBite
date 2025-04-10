@@ -120,16 +120,6 @@
             background: #f9f9f9;
         }
 
-        .status-active {
-            color: #27ae60;
-            font-weight: 600;
-        }
-
-        .status-inactive {
-            color: #7f8c8d;
-            font-weight: 600;
-        }
-
         .search-form {
             margin-bottom: 20px;
         }
@@ -182,7 +172,7 @@
         <h1 class="text-center mb-4"><i class="fas fa-store mr-2"></i>Restaurants List</h1>
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <a th:href="@{/admin/restaurants/new}" class="btn btn-primary">
-                <i class="fas fa-plus mr-2"></i>Create New Restaurant
+                <i class="fas fa-plus mr-2"></i>Add New Restaurant
             </a>
             <!-- Search Form -->
             <form th:action="@{/admin/restaurants/all}" method="get" class="search-form">
@@ -257,21 +247,36 @@
                         <i th:if="${param.sortBy != 'cuisine.name'}" class="fas fa-sort sort-icon"></i>
                     </a>
                 </th>
+                <th>
+                    <a th:href="@{/admin/restaurants/all(sortBy='openTime',sortDir=${param.sortBy == 'openTime' and param.sortDir == 'asc' ? 'desc' : 'asc'},search=${param.search})}" class="sort-link">
+                        Open Time
+                        <i th:if="${param.sortBy == 'openTime' and param.sortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                        <i th:if="${param.sortBy == 'openTime' and param.sortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                        <i th:if="${param.sortBy != 'openTime'}" class="fas fa-sort sort-icon"></i>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/admin/restaurants/all(sortBy='closeTime',sortDir=${param.sortBy == 'closeTime' and param.sortDir == 'asc' ? 'desc' : 'asc'},search=${param.search})}" class="sort-link">
+                        Close Time
+                        <i th:if="${param.sortBy == 'closeTime' and param.sortDir == 'asc'}" class="fas fa-sort-up sort-icon"></i>
+                        <i th:if="${param.sortBy == 'closeTime' and param.sortDir == 'desc'}" class="fas fa-sort-down sort-icon"></i>
+                        <i th:if="${param.sortBy != 'closeTime'}" class="fas fa-sort sort-icon"></i>
+                    </a>
+                </th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="restaurant : ${restaurants}">
-                <td th:text="${restaurant.name != null ? restaurant.name : 'N/A'}"></td>
-                <td th:text="${restaurant.address != null ? restaurant.address : 'N/A'}"></td>
-                <td th:text="${restaurant.phone != null ? restaurant.phone : 'N/A'}"></td>
-                <td th:text="${restaurant.email != null ? restaurant.email : 'N/A'}"></td>
-                <td th:text="${restaurant.totalTables != null ? restaurant.totalTables : 'N/A'}"></td>
-                <td>
-                    <span th:class="${restaurant.isActive != null and restaurant.isActive} ? 'status-active' : 'status-inactive'"
-                          th:text="${restaurant.isActive != null and restaurant.isActive} ? 'Active' : 'Inactive'"></span>
-                </td>
+                <td th:text="${restaurant.name}"></td>
+                <td th:text="${restaurant.address}"></td>
+                <td th:text="${restaurant.phone}"></td>
+                <td th:text="${restaurant.email}"></td>
+                <td th:text="${restaurant.totalTables}"></td>
+                <td th:text="${restaurant.isActive} ? 'Yes' : 'No'"></td>
                 <td th:text="${restaurant.cuisine != null ? restaurant.cuisine.name : 'N/A'}"></td>
+                <td th:text="${#temporals.format(restaurant.openTime, 'HH:mm')}"></td>
+                <td th:text="${#temporals.format(restaurant.closeTime, 'HH:mm')}"></td>
                 <td>
                     <a th:href="@{/admin/restaurants/edit/{id}(id=${restaurant.id})}" class="btn btn-warning btn-sm">
                         <i class="fas fa-edit"></i>Edit
@@ -283,7 +288,7 @@
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(restaurants)}">
-                <td colspan="8" class="text-center">No restaurants found</td>
+                <td colspan="10" class="text-center">No restaurants found</td>
             </tr>
             </tbody>
         </table>

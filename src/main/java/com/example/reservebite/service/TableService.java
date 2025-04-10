@@ -31,7 +31,8 @@ public class TableService {
     }
 
     public Table getTableByID(Long tableId) {
-        return tableRepository.findById(tableId).orElseThrow(() -> new NoSuchElementException("No such table"));
+        return tableRepository.findById(tableId)
+                .orElseThrow(() -> new NoSuchElementException("Table with ID " + tableId + " not found"));
     }
 
     public void deleteTable(Long tableId) {
@@ -42,22 +43,19 @@ public class TableService {
         return tableRepository.findAvailableTablesByRestaurantId(restaurantId);
     }
 
-    public List<Table> getAvailableTablesByRestaurantIdAndDate(Long restaurantId, LocalDateTime reservationDate) {
-        // Fetch all tables for the restaurant
-        List<Table> tables = tableRepository.findByRestaurantId(restaurantId);
-
-        // Fetch reservations for the given date and restaurant
-        List<Reservation> reservations = reservationRepository.findByRestaurantIdAndReservationDate(
-                restaurantId, reservationDate);
-
-        // Filter out tables that are already reserved at the given date and time
-        List<Long> reservedTableIds = reservations.stream()
-                .filter(reservation -> reservation.getTable() != null)
-                .map(reservation -> reservation.getTable().getId())
-                .collect(Collectors.toList());
-
-        return tables.stream()
-                .filter(table -> !reservedTableIds.contains(table.getId()))
-                .collect(Collectors.toList());
+    public List<Table> getTablesByRestaurantId(Long restaurantId) {
+        if (restaurantId == null) {
+            throw new IllegalArgumentException("Restaurant ID must not be null");
+        }
+        return tableRepository.findByRestaurantId(restaurantId);
     }
+
+    public List<Table> getAvailableTablesByRestaurantIdAndDate(Long restaurantId, LocalDateTime dateTime) {
+        if (restaurantId == null || dateTime == null) {
+            throw new IllegalArgumentException("Restaurant ID and dateTime must not be null");
+        }
+        LocalDateTime endTime = dateTime.plusHours(1);
+        return tableRepository.findAvailableTablesByRestaurantIdAndDateRange(restaurantId, dateTime, endTime);
+    }
+
 }

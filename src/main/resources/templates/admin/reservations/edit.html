@@ -138,9 +138,9 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
                     </div>
-                    <input type="datetime-local" id="reservationDate" th:field="*{reservationDate}" class="form-control" required />
+                    <input type="datetime-local" id="reservationDate" th:field="*{reservationDate}" class="form-control" readonly />
                 </div>
-                <small id="dateError" class="form-text text-danger" style="display: none;">Reservation date cannot be in the past.</small>
+<!--                <small id="dateError" class="form-text text-danger" style="display: none;">Reservation date cannot be in the past.</small>-->
             </div>
 
             <!-- Number of Guests -->
@@ -164,7 +164,7 @@
                     </div>
                     <select id="status" th:field="*{status}" class="form-control" required>
                         <option value="">Select Status</option>
-                        <option value="ACTIVE">Active</option>
+                        <option value="CONFIRMED">Confirmed</option>
                         <option value="COMPLETED">Completed</option>
                         <option value="CANCELED">Canceled</option>
                     </select>
@@ -235,7 +235,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const reservationDateInput = document.getElementById('reservationDate');
+        // const reservationDateInput = document.getElementById('reservationDate');
         const restaurantId = document.querySelector('input[name="restaurantId"]').value; // Get the restaurantId from the hidden input
         const tableSelect = document.getElementById('table');
         const form = document.getElementById('reservationForm');
@@ -244,22 +244,22 @@
         const guestsError = document.getElementById('guestsError');
 
         // Set the minimum date to now
-        const now = new Date();
-        const minDate = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
-        reservationDateInput.setAttribute('min', minDate);
+        // const now = new Date();
+        // const minDate = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+        // reservationDateInput.setAttribute('min', minDate);
 
         // Define the selected tableId from the form (if any)
         const selectedTableId = [[${reservationForm.tableId != null ? reservationForm.tableId : 'null'}]];
 
         // Validate reservation date on form submission
         form.addEventListener('submit', function (event) {
-            const selectedDate = new Date(reservationDateInput.value);
-            if (selectedDate < now) {
-                event.preventDefault();
-                dateError.style.display = 'block';
-            } else {
-                dateError.style.display = 'none';
-            }
+            // const selectedDate = new Date(reservationDateInput.value);
+            // if (selectedDate < now) {
+            //     event.preventDefault();
+            //     dateError.style.display = 'block';
+            // } else {
+            //     dateError.style.display = 'none';
+            // }
 
             const numberOfGuests = parseInt(numberOfGuestsInput.value);
             if (numberOfGuests < 1) {
@@ -271,16 +271,16 @@
         });
 
         // Validate reservation date on input change
-        reservationDateInput.addEventListener('change', function () {
-            const selectedDate = new Date(reservationDateInput.value);
-            if (selectedDate < now) {
-                dateError.style.display = 'block';
-            } else {
-                dateError.style.display = 'none';
-                // Refresh table options
-                fetchTables();
-            }
-        });
+        // reservationDateInput.addEventListener('change', function () {
+        //     const selectedDate = new Date(reservationDateInput.value);
+        //     if (selectedDate < now) {
+        //         dateError.style.display = 'block';
+        //     } else {
+        //         dateError.style.display = 'none';
+        //         // Refresh table options
+        //         fetchTables();
+        //     }
+        // });
 
         // Validate number of guests on input change
         numberOfGuestsInput.addEventListener('change', function () {

@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/orders","/user/messages") // Add this line
+                        .ignoringRequestMatchers("/api/orders","/user/messages","/user/reservations") // Add this line
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/index.html", "/login", "/register",
@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/admin/messages/**").hasRole("ADMIN")
                         .requestMatchers("/user/messages/**").hasRole("USER")
+                        .requestMatchers("/user/reservations/**").hasRole("USER")
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/courier/**").hasRole("COURIER")
                         .requestMatchers("/waiter/**").hasRole("WAITER")

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -154,6 +155,16 @@ public class RestaurantController {
                     String cuisineName2 = r2.getCuisine() != null ? r2.getCuisine().getName() : "";
                     compare = cuisineName1.compareToIgnoreCase(cuisineName2);
                     break;
+                case "openTime":
+                    LocalTime openTime1 = r1.getOpenTime() != null ? r1.getOpenTime() : LocalTime.MIDNIGHT;
+                    LocalTime openTime2 = r2.getOpenTime() != null ? r2.getOpenTime() : LocalTime.MIDNIGHT;
+                    compare = openTime1.compareTo(openTime2);
+                    break;
+                case "closeTime":
+                    LocalTime closeTime1 = r1.getCloseTime() != null ? r1.getCloseTime() : LocalTime.MIDNIGHT;
+                    LocalTime closeTime2 = r2.getCloseTime() != null ? r2.getCloseTime() : LocalTime.MIDNIGHT;
+                    compare = closeTime1.compareTo(closeTime2);
+                    break;
                 case "name":
                 default:
                     String name1 = r1.getName() != null ? r1.getName() : "";
@@ -203,7 +214,9 @@ public class RestaurantController {
         restaurant.setTotalTables(restaurantForm.getTotalTables());
         restaurant.setIsActive(restaurantForm.getActive());
         restaurant.setCuisine(cuisine);
-        restaurant.setCoordinates(restaurantForm.getCoordinates()); // Set coordinates
+        restaurant.setCoordinates(restaurantForm.getCoordinates());
+        restaurant.setOpenTime(restaurantForm.getOpenTime());   // Set openTime
+        restaurant.setCloseTime(restaurantForm.getCloseTime()); // Set closeTime
 
         restaurantService.saveRestaurant(restaurant);
         return "redirect:/admin/restaurants";
@@ -220,7 +233,9 @@ public class RestaurantController {
         restaurantForm.setEmail(restaurant.getEmail());
         restaurantForm.setTotalTables(restaurant.getTotalTables());
         restaurantForm.setActive(restaurant.getIsActive());
-        restaurantForm.setCoordinates(restaurant.getCoordinates()); // Populate coordinates
+        restaurantForm.setCoordinates(restaurant.getCoordinates());
+        restaurantForm.setOpenTime(restaurant.getOpenTime());   // Populate openTime
+        restaurantForm.setCloseTime(restaurant.getCloseTime()); // Populate closeTime
         if (restaurant.getCuisine() != null) {
             restaurantForm.setCuisineId(restaurant.getCuisine().getId());
         }
@@ -252,7 +267,9 @@ public class RestaurantController {
         restaurant.setTotalTables(restaurantForm.getTotalTables());
         restaurant.setIsActive(restaurantForm.getActive());
         restaurant.setCuisine(cuisine);
-        restaurant.setCoordinates(restaurantForm.getCoordinates()); // Update coordinates
+        restaurant.setCoordinates(restaurantForm.getCoordinates());
+        restaurant.setOpenTime(restaurantForm.getOpenTime());   // Update openTime
+        restaurant.setCloseTime(restaurantForm.getCloseTime()); // Update closeTime
 
         restaurantService.saveRestaurant(restaurant);
         return "redirect:/admin/restaurants";

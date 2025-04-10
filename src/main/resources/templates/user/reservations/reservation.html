@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Reservation</title>
+    <title>Reservations - ReserveBite</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body {
-            background: #f5f5f5;
             font-family: 'Arial', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #e74c3c !important;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #e74c3c !important;
         }
 
         .container {
-            max-width: 1200px;
-        }
-
-        .section {
-            display: none;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            max-width: 1400px;
+            margin-top: 80px;
+            padding: 0 15px;
         }
 
         h1, h2 {
@@ -30,17 +41,84 @@
             font-weight: 700;
         }
 
-        .card {
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+        .section {
             background: #fff;
-            cursor: pointer;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
 
-        .card:hover {
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-btn i {
+            margin-right: 10px;
+        }
+
+        .action-btn.my-reservations {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: #fff;
+        }
+
+        .action-btn.create-reservation {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+        }
+
+        .action-btn:hover {
             transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .restaurant-card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .restaurant-card-body {
+            padding: 20px;
+        }
+
+        .restaurant-card-title {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .restaurant-info {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .restaurant-info i {
+            margin-right: 8px;
+            color: #e74c3c;
         }
 
         .btn {
@@ -68,176 +146,506 @@
             background: #6c7778;
         }
 
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
         .form-control {
             border-radius: 10px;
             border: 1px solid #ddd;
         }
 
-        .error-message {
-            color: #e74c3c;
-            font-size: 0.9rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .form-group label {
-            color: #2c3e50;
-            font-weight: 600;
-        }
-
-        .form-container {
-            background: #fff;
-            padding: 25px;
+        /* Modal Styles */
+        .modal-content {
             border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .slot-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .slot {
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .slot.available {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .slot.reserved {
+            background: #e74c3c;
+            color: #fff;
+            cursor: not-allowed;
+        }
+
+        .slot.selected {
+            background: #f1c40f;
+            color: #fff;
         }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-5"><i class="fas fa-calendar-plus mr-2"></i>Create a New Reservation</h1>
-
-    <!-- Step 1: Select Restaurant -->
-    <div id="select-restaurant" class="section">
-        <h2 class="mb-4">Select a Restaurant</h2>
-        <div class="row">
-            <div class="col-md-4" th:each="restaurant : ${restaurants}">
-                <div class="card mb-4" th:onclick="'selectRestaurant(' + ${restaurant.id} + ')'">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${restaurant.name}">Restaurant Name</h5>
-                        <p class="card-text text-muted" th:text="${restaurant.address}">Restaurant Address</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="text-center mt-4">
-            <a href="/user/dashboard" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
-            </a>
-        </div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">ReserveBite</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/user/dashboard}"><i class="fas fa-tachometer-alt mr-1"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+            </li>
+        </ul>
     </div>
+</nav>
 
-    <!-- Step 2: Select Table -->
-    <div id="select-table" class="section">
-        <h2 class="mb-4">Select a Table</h2>
-        <div class="row" id="tables-container">
-            <!-- Tables will be dynamically loaded here -->
+<!-- Initial Selection -->
+<div id="initial-selection" class="container section">
+    <h1 class="text-center mb-5"><i class="fas fa-calendar-alt mr-2"></i>Reservations</h1>
+    <div class="action-buttons">
+        <button class="action-btn my-reservations" onclick="showMyReservations()">
+            <i class="fas fa-list-alt"></i> My Reservations
+        </button>
+        <button class="action-btn create-reservation" onclick="showRestaurantSelection()">
+            <i class="fas fa-plus"></i> Create Reservation
+        </button>
+    </div>
+</div>
+
+<!-- My Reservations -->
+<div id="my-reservations" class="container section" style="display: none;">
+    <h2 class="mb-5">My Reservations</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Reservation Date</th>
+            <th>Guests</th>
+            <th>Status</th>
+            <th>Restaurant</th>
+            <th>Table</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="reservation-list">
+        </tbody>
+    </table>
+    <div class="text-center">
+        <button class="btn btn-secondary" onclick="backToInitial()">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+        </button>
+    </div>
+</div>
+
+<!-- Restaurant Selection -->
+<div id="select-restaurant" class="container section" style="display: none;">
+    <h1 class="text-center mb-5"><i class="fas fa-store mr-2"></i>Select Restaurant</h1>
+    <div class="row" id="restaurant-list"></div>
+    <div class="text-center">
+        <button class="btn btn-secondary" onclick="backToInitial()">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+        </button>
+    </div>
+</div>
+
+<!-- Table Selection -->
+<div id="select-table" class="container section" style="display: none;">
+    <h2 class="mb-5">Select Table</h2>
+    <div class="row" id="table-list"></div>
+    <div class="text-center mt-4">
+        <button class="btn btn-secondary" onclick="backToRestaurants()">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+        </button>
+    </div>
+</div>
+
+<!-- Reservation Form -->
+<div id="create-reservation" class="container section" style="display: none;">
+    <h2 class="mb-5">Create Reservation</h2>
+    <form id="reservation-form" onsubmit="submitReservation(event)">
+        <div class="form-group">
+            <label>Selected Restaurant</label>
+            <input type="text" id="selected-restaurant" class="form-control" readonly>
         </div>
-        <div class="d-flex justify-content-between mt-4">
-            <button class="btn btn-secondary" onclick="backToRestaurants()">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Restaurants
+        <div class="form-group">
+            <label>Selected Table</label>
+            <input type="text" id="selected-table" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+            <label>Reservation Date & Time</label>
+            <input type="text" id="reservation-date" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+            <label for="number-of-guests">Number of Guests</label>
+            <input type="number" id="number-of-guests" class="form-control" min="1" required>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="backToTables()">
+                <i class="fas fa-arrow-left mr-2"></i>Back
             </button>
-            <a href="/user/dashboard" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
-            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check mr-2"></i>Reserve
+            </button>
         </div>
-    </div>
+    </form>
+</div>
 
-    <!-- Step 3: Enter Reservation Details -->
-    <div id="reservation-details" class="section">
-        <h2 class="mb-4">Enter Reservation Details</h2>
-        <div class="form-container">
-            <form id="reservation-form" th:action="@{/user/reservations}" method="post" onsubmit="return validateReservation()">
-                <input type="hidden" id="restaurantId" name="restaurantId">
-                <input type="hidden" id="tableId" name="tableId">
-                <input type="hidden" id="tableCapacity">
-
-                <!-- Reservation Date/Time -->
+<!-- Slots Modal -->
+<div class="modal fade" id="slotsModal" tabindex="-1" role="dialog" aria-labelledby="slotsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="slotsModalLabel">Select Reservation Date & Slots</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
                 <div class="form-group">
-                    <label for="reservationDateTime">Reservation Date & Time</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                        </div>
-                        <input type="text" id="reservationDateTime" class="form-control" name="reservationDateTime"
-                               placeholder="Select Date & Time" required>
-                    </div>
-                    <p class="error-message" id="datetime-error">Reservation date/time cannot be in the past.</p>
+                    <label for="date-slot">Select Date</label>
+                    <input type="date" id="date-slot" class="form-control" required onchange="fetchSlotsForDate()">
                 </div>
-
-                <!-- Number of Guests -->
-                <div class="form-group">
-                    <label for="numberOfGuests">Number of Guests</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-users"></i></span>
-                        </div>
-                        <input type="number" class="form-control" id="numberOfGuests" name="numberOfGuests"
-                               min="1" required>
-                    </div>
-                    <p class="error-message" id="guest-error">Number of guests cannot exceed table capacity.</p>
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex justify-content-between">
-                    <button class="btn btn-secondary" onclick="backToTables(); return false;">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Tables
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check mr-2"></i>Confirm Reservation
-                    </button>
-                    <a href="/user/dashboard" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
-                    </a>
-                </div>
-            </form>
+                <div id="slotContainer" class="slot-container"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmSlotBtn">Confirm Slot</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('select-restaurant').style.display = 'block';
-        flatpickr("#reservationDateTime", {
-            enableTime: true,
-            dateFormat: "Y-m-d\\TH:i",
-            time_24hr: true,
-            minDate: "today",
-        });
+    let selectedRestaurant = null;
+    let selectedTable = null;
+    let selectedSlot = null;
+    let selectedDate = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('initial-selection').style.display = 'block';
+        loadRestaurants();
     });
 
-    function selectRestaurant(restaurantId) {
-        console.log("Restaurant ID selected: " + restaurantId);
+    function loadRestaurants() {
         $.ajax({
-            url: '/user/reservations/get-tables',
+            url: '/user/reservations/restaurants',
             type: 'GET',
-            data: { restaurantId: restaurantId },
-            success: function (data) {
-                console.log("Tables loaded: ", data);
-                $('#tables-container').empty();
-                data.forEach(function (table) {
-                    $('#tables-container').append(
-                        `<div class="col-md-4">
-                            <div class="card mb-4" onclick="selectTable(${table.id}, ${table.capacity})">
-                                <div class="card-body">
-                                    <h5 class="card-title">Table ${table.tableNumber}</h5>
-                                    <p class="card-text text-muted">Capacity: ${table.capacity}</p>
-                                </div>
+            success: (data) => {
+                console.log('Restaurants data:', data); // Debug: Log the restaurant data
+                const restaurantList = $('#restaurant-list');
+                restaurantList.empty();
+                data.forEach(restaurant => {
+                    const card = `
+                    <div class="col-md-4 mb-4">
+                        <div class="restaurant-card">
+                            <div class="restaurant-card-body">
+                                <h5 class="restaurant-card-title">${restaurant.name}</h5>
+                                <p class="restaurant-info"><i class="fas fa-utensils"></i> Cuisine: ${restaurant.cuisine.name}</p>
+                                <p class="restaurant-info"><i class="fas fa-map-marker-alt"></i> Address: ${restaurant.address}</p>
+                                <button class="btn btn-primary btn-sm mt-3"
+                                        data-restaurant-id="${restaurant.id}"
+                                        data-restaurant-name="${restaurant.name}"
+                                        onclick="selectRestaurantFromButton(this)">
+                                    <i class="fas fa-arrow-right"></i> Select
+                                </button>
                             </div>
-                        </div>`
-                    );
+                        </div>
+                    </div>
+                `;
+                    restaurantList.append(card);
                 });
-                document.getElementById('select-restaurant').style.display = 'none';
-                document.getElementById('select-table').style.display = 'block';
-                document.getElementById('restaurantId').value = restaurantId;
             },
-            error: function (xhr, status, error) {
-                console.error("Error loading tables: " + status + " " + error);
+            error: () => {
+                alert('Error loading restaurants.');
             }
         });
     }
 
-    function selectTable(tableId, capacity) {
-        console.log("Table ID selected: " + tableId + ", Capacity: " + capacity);
-        document.getElementById('tableId').value = tableId;
-        document.getElementById('tableCapacity').value = capacity;
-        document.getElementById('numberOfGuests').setAttribute('max', capacity);
-        document.getElementById('reservation-details').style.display = 'block';
+    function showMyReservations() {
+        document.getElementById('initial-selection').style.display = 'none';
+        document.getElementById('my-reservations').style.display = 'block';
+        $.ajax({
+            url: '/user/reservations/my-reservations',
+            type: 'GET',
+            success: (data) => {
+                console.log('Reservations data:', data); // Debug: Log the full response
+                const reservationList = $('#reservation-list');
+                reservationList.empty();
+                if (!data || data.length === 0) {
+                    reservationList.append('<tr><td colspan="6" class="text-center">No reservations found.</td></tr>');
+                    return;
+                }
+                data.forEach((reservation, index) => {
+                    try {
+                        console.log(`Processing reservation ${index}:`, reservation); // Debug: Log each reservation
+                        // Use DTO fields directly
+                        const tableNumber = reservation.tableNumber || 'N/A';
+                        const restaurantName = reservation.restaurantName || 'N/A';
+                        const status = reservation.status || 'UNKNOWN';
+                        const numberOfGuests = reservation.numberOfGuests || 0;
+                        const reservationDate = reservation.reservationDate ? new Date(reservation.reservationDate).toLocaleString() : 'N/A';
+                        const reservationId = reservation.id != null ? reservation.id : '';
+
+                        // Map status to badge classes
+                        const statusClass = {
+                            'CONFIRMED': 'badge badge-success',
+                            'CANCELLED': 'badge badge-danger',
+                            'COMPLETED': 'badge badge-primary',
+                            'ACTIVE': 'badge badge-warning',
+                            'UNKNOWN': 'badge badge-secondary'
+                        }[status] || 'badge badge-secondary';
+
+                        // Simplify the actions column
+                        let actions = 'No actions available';
+                        if (status === 'ACTIVE' && reservationId) {
+                            actions = `<a href="/user/reservations/cancel/${reservationId}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this reservation?')"><i class="fas fa-trash mr-1"></i>Cancel</a>`;
+                        }
+
+                        const row = `
+                    <tr>
+                        <td>${reservationDate}</td>
+                        <td>${numberOfGuests}</td>
+                        <td>
+                            <span class="${statusClass}">${status}</span>
+                        </td>
+                        <td>${restaurantName}</td>
+                        <td>${tableNumber}</td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+                        reservationList.append(row);
+                    } catch (error) {
+                        console.error(`Error rendering reservation at index ${index}:`, reservation, error);
+                        reservationList.append(`<tr><td colspan="6" class="text-center text-danger">Error rendering reservation ${index + 1}</td></tr>`);
+                    }
+                });
+            },
+            error: (xhr, status, error) => {
+                console.error('Error loading reservations:', error);
+                alert('Error loading reservations.');
+            }
+        });
+    }
+
+    function showRestaurantSelection() {
+        document.getElementById('initial-selection').style.display = 'none';
+        document.getElementById('select-restaurant').style.display = 'block';
+    }
+
+    function selectRestaurantFromButton(button) {
+        const restaurantId = parseInt(button.getAttribute('data-restaurant-id'));
+        const restaurantName = button.getAttribute('data-restaurant-name');
+        selectedRestaurant = { id: restaurantId, name: restaurantName };
+        console.log('Selected restaurant:', selectedRestaurant); // Debug: Log the selected restaurant
+        loadTables(restaurantId);
+    }
+
+    function loadTables(restaurantId) {
+        $.ajax({
+            url: `/user/reservations/tables?restaurantId=${restaurantId}`,
+            type: 'GET',
+            success: (data) => {
+                const tableList = $('#table-list');
+                tableList.empty();
+                data.forEach(table => {
+                    const card = `
+                    <div class="col-md-4 mb-4">
+                        <div class="restaurant-card">
+                            <div class="restaurant-card-body">
+                                <h5 class="restaurant-card-title">Table ${table.tableNumber}</h5>
+                                <p class="restaurant-info"><i class="fas fa-users"></i> Capacity: ${table.capacity}</p>
+                                <button class="btn btn-primary btn-sm mt-3"
+                                        data-table-id="${table.id}"
+                                        data-table-number="${table.tableNumber}"
+                                        data-table-capacity="${table.capacity}"
+                                        onclick="selectTableFromButton(this)">
+                                    <i class="fas fa-arrow-right"></i> Select
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    tableList.append(card);
+                });
+                document.getElementById('select-restaurant').style.display = 'none';
+                document.getElementById('select-table').style.display = 'block';
+            },
+            error: () => {
+                alert('Error loading tables.');
+            }
+        });
+    }
+
+    function selectTableFromButton(button) {
+        const tableId = parseInt(button.getAttribute('data-table-id'));
+        const tableNumber = button.getAttribute('data-table-number');
+        const capacity = parseInt(button.getAttribute('data-table-capacity')); // Assuming capacity is included
+        selectedTable = { id: tableId, number: tableNumber, capacity: capacity };
+        showAvailableSlots();
+    }
+
+    function showAvailableSlots() {
+        if (!selectedRestaurant || !selectedTable) {
+            alert('Please select a restaurant and table first.');
+            return;
+        }
+        const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        $('#date-slot').val(''); // Reset input
+        $('#date-slot').attr('min', today); // Prevent past dates
+        $('#slotContainer').empty(); // Clear previous slots
+        selectedSlot = null; // Reset selectedSlot to ensure fresh selection
+        $('#slotsModal').modal('show');
+    }
+
+    function fetchSlotsForDate() {
+        const date = $('#date-slot').val();
+        const today = new Date().toISOString().split('T')[0];
+        if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            alert('Invalid date format. Please use YYYY-MM-DD.');
+            return;
+        }
+        if (date < today) {
+            alert('You cannot select a date before today. Please choose a future date.');
+            $('#date-slot').val(today);
+            return;
+        }
+        selectedDate = date;
+        selectedSlot = null; // Reset selectedSlot when fetching new slots
+        $.ajax({
+            url: `/user/reservations/available-slots?restaurantId=${selectedRestaurant.id}&tableId=${selectedTable.id}&date=${date}`,
+            type: 'GET',
+            success: (slots) => {
+                const slotContainer = $('#slotContainer');
+                slotContainer.empty();
+                const now = new Date();
+                slots.forEach(slot => {
+                    const slotDateTime = new Date(`${date}T${slot.time}:00`);
+                    const isPast = slotDateTime < now && date === today; // Only restrict past times for today
+                    const div = $('<div></div>')
+                        .text(slot.time)
+                        .addClass('slot')
+                        .addClass(isPast || !slot.available ? 'reserved' : 'available');
+                    if (!isPast && slot.available) {
+                        div.on('click', function () {
+                            slotContainer.find('.slot').removeClass('selected'); // Remove previous selection
+                            $(this).addClass('selected'); // Mark current as selected
+                            selectedSlot = slot.time; // Update selectedSlot
+                            console.log('Selected slot:', selectedSlot); // Debug log
+                        });
+                    }
+                    slotContainer.append(div);
+                });
+            },
+            error: () => {
+                $('#slotContainer').text('Error loading slots.');
+            }
+        });
+    }
+
+    $('#confirmSlotBtn').on('click', function () {
+        console.log('Confirm button clicked. Current selectedSlot:', selectedSlot); // Debug log
+        if (!selectedSlot) {
+            alert('Please select a slot.');
+            return;
+        }
+        $('#selected-restaurant').val(selectedRestaurant.name);
+        $('#selected-table').val(selectedTable.number);
+        $('#reservation-date').val(`${selectedDate} ${selectedSlot}`);
+        $('#slotsModal').modal('hide');
         document.getElementById('select-table').style.display = 'none';
+        document.getElementById('create-reservation').style.display = 'block';
+    });
+
+    function getCsrfToken() {
+        const cookie = document.cookie.split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='));
+        return cookie ? cookie.split('=')[1] : null;
+    }
+
+    function submitReservation(event) {
+        event.preventDefault();
+        const numberOfGuests = parseInt($('#number-of-guests').val());
+        if (numberOfGuests < 1) {
+            alert('Number of guests must be at least 1.');
+            return;
+        }
+        if (numberOfGuests > selectedTable.capacity) {
+            alert(`Number of guests (${numberOfGuests}) exceeds table capacity (${selectedTable.capacity}). Please select a table with higher capacity.`);
+            return;
+        }
+        if (!selectedRestaurant || !selectedRestaurant.id) {
+            alert('Error: No restaurant selected. Please start over.');
+            backToInitial();
+            return;
+        }
+
+        const reservation = {
+            restaurantId: selectedRestaurant.id,
+            tableId: selectedTable.id,
+            reservationDate: `${selectedDate}T${selectedSlot}:00`,
+            numberOfGuests: numberOfGuests,
+            status: 'ACTIVE'
+        };
+        console.log('Reservation to be sent:', reservation);
+
+        $.ajax({
+            url: '/user/reservations',
+            type: 'POST',
+            contentType: 'application/json',
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken()
+            },
+            data: JSON.stringify(reservation),
+            success: () => {
+                alert('Reservation created successfully!');
+                backToInitial();
+            },
+            error: (xhr, status, error) => {
+                console.error('Error creating reservation:', error);
+                alert('Error creating reservation: ' + (xhr.responseText || 'The slot may already be taken.'));
+            }
+        });
+    }
+
+    function backToInitial() {
+        selectedRestaurant = null;
+        selectedTable = null;
+        selectedSlot = null;
+        selectedDate = null;
+        document.getElementById('my-reservations').style.display = 'none';
+        document.getElementById('select-restaurant').style.display = 'none';
+        document.getElementById('select-table').style.display = 'none';
+        document.getElementById('create-reservation').style.display = 'none';
+        document.getElementById('initial-selection').style.display = 'block';
     }
 
     function backToRestaurants() {
@@ -246,34 +654,8 @@
     }
 
     function backToTables() {
-        document.getElementById('reservation-details').style.display = 'none';
+        document.getElementById('create-reservation').style.display = 'none';
         document.getElementById('select-table').style.display = 'block';
-    }
-
-    function validateReservation() {
-        const reservationDateTime = document.getElementById('reservationDateTime').value;
-        const selectedDateTime = new Date(reservationDateTime);
-        const currentDateTime = new Date();
-        const numberOfGuests = parseInt(document.getElementById('numberOfGuests').value);
-        const maxCapacity = parseInt(document.getElementById('tableCapacity').value);
-
-        let isValid = true;
-
-        if (selectedDateTime <= currentDateTime) {
-            document.getElementById('datetime-error').style.display = 'block';
-            isValid = false;
-        } else {
-            document.getElementById('datetime-error').style.display = 'none';
-        }
-
-        if (numberOfGuests > maxCapacity) {
-            document.getElementById('guest-error').style.display = 'block';
-            isValid = false;
-        } else {
-            document.getElementById('guest-error').style.display = 'none';
-        }
-
-        return isValid;
     }
 </script>
 </body>

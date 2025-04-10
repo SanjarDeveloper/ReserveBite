@@ -102,8 +102,63 @@
             background: #6c7778;
         }
 
+        .btn-info {
+            background: #3498db;
+            border: none;
+        }
+
+        .btn-info:hover {
+            background: #2980b9;
+        }
+
         .alert {
             border-radius: 10px;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .slot-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .slot {
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .slot.available {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .slot.reserved {
+            background: #e74c3c;
+            color: #fff;
+            cursor: not-allowed;
+        }
+
+        .slot.selected {
+            background: #f1c40f;
+            color: #fff;
         }
     </style>
 </head>
@@ -135,16 +190,50 @@
             <span th:text="${error}"></span>
         </div>
         <form id="reservationForm" th:action="@{/admin/reservations}" th:object="${reservationForm}" method="post">
-            <!-- Reservation Date -->
+            <!-- Restaurant -->
+            <div class="form-group">
+                <label for="restaurant">Restaurant</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-store"></i></span>
+                    </div>
+                    <select id="restaurant" th:field="*{restaurantId}" class="form-control" required>
+                        <option value="">Select Restaurant</option>
+                        <option th:each="restaurant : ${restaurants}"
+                                th:value="${restaurant.id}"
+                                th:text="${restaurant.name}"
+                                th:selected="${reservationForm.restaurantId == restaurant.id}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="form-group">
+                <label for="table">Table</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-chair"></i></span>
+                    </div>
+                    <select id="table" th:field="*{tableId}" class="form-control" required disabled>
+                        <option value="">Select Table</option>
+                    </select>
+                </div>
+                <small id="tableError" class="form-text text-danger" style="display: none;">Error loading tables. Please try again.</small>
+            </div>
+
+            <!-- Reservation Date and Slots -->
             <div class="form-group">
                 <label for="reservationDate">Reservation Date</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
                     </div>
-                    <input type="datetime-local" id="reservationDate" th:field="*{reservationDate}" class="form-control" required />
+                    <input type="date" id="reservationDateInput" class="form-control" required disabled />
+                    <input type="hidden" id="reservationDate" th:field="*{reservationDate}" />
                 </div>
-                <small id="dateError" class="form-text text-danger" style="display: none;">Reservation date cannot be in the past.</small>
+                <button type="button" id="showSlotsBtn" class="btn btn-info mt-2" disabled>
+                    <i class="fas fa-clock mr-2"></i>See Available Slots
+                </button>
             </div>
 
             <!-- Number of Guests -->
@@ -168,26 +257,7 @@
                     </div>
                     <select id="status" th:field="*{status}" class="form-control" required>
                         <option value="">Select Status</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="COMPLETED">Completed</option>
-                        <option value="CANCELED">Canceled</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Restaurant -->
-            <div class="form-group">
-                <label for="restaurant">Restaurant</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-store"></i></span>
-                    </div>
-                    <select id="restaurant" th:field="*{restaurantId}" class="form-control" required>
-                        <option value="">Select Restaurant</option>
-                        <option th:each="restaurant : ${restaurants}"
-                                th:value="${restaurant.id}"
-                                th:text="${restaurant.name}"
-                                th:selected="${reservationForm.restaurantId == restaurant.id}"></option>
+                        <option value="ACTIVE">New</option>
                     </select>
                 </div>
             </div>
@@ -209,21 +279,6 @@
                 </div>
             </div>
 
-            <!-- Table -->
-            <div class="form-group">
-                <label for="table">Table</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-chair"></i></span>
-                    </div>
-                    <select id="table" th:field="*{tableId}" class="form-control" required>
-                        <option value="">Select Table</option>
-                        <!-- Options will be populated dynamically via JavaScript -->
-                    </select>
-                </div>
-                <small id="tableError" class="form-text text-danger" style="display: none;">Error loading tables. Please try again.</small>
-            </div>
-
             <!-- Buttons -->
             <div class="d-flex justify-content-between">
                 <a th:href="@{/admin/reservations}" class="btn btn-secondary">
@@ -237,6 +292,27 @@
     </div>
 </div>
 
+<!-- Modal for Slots -->
+<div class="modal fade" id="slotsModal" tabindex="-1" role="dialog" aria-labelledby="slotsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="slotsModalLabel">Available Slots</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="slotContainer" class="slot-container"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmSlotBtn">Confirm Slot</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/jquery.min.js}"></script>
@@ -244,103 +320,65 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const reservationDateInput = document.getElementById('reservationDate');
         const restaurantSelect = document.getElementById('restaurant');
         const tableSelect = document.getElementById('table');
-        const form = document.getElementById('reservationForm');
-        const dateError = document.getElementById('dateError');
+        const reservationDateInput = document.getElementById('reservationDateInput');
+        const reservationDateHidden = document.getElementById('reservationDate');
+        const showSlotsBtn = document.getElementById('showSlotsBtn');
         const numberOfGuestsInput = document.getElementById('numberOfGuests');
         const guestsError = document.getElementById('guestsError');
         const tableError = document.getElementById('tableError');
+        const slotContainer = document.getElementById('slotContainer');
+        const confirmSlotBtn = document.getElementById('confirmSlotBtn');
+        let selectedSlot = null;
 
-        // Set the minimum date to now
-        const now = new Date();
-        const minDate = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
-        reservationDateInput.setAttribute('min', minDate);
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        reservationDateInput.setAttribute('min', today);
 
-        // Define the selected tableId from the form (if any)
-        const selectedTableId = [[${reservationForm.tableId != null ? reservationForm.tableId : 'null'}]];
-
-        // Validate reservation date on form submission
-        form.addEventListener('submit', function (event) {
-            const selectedDate = new Date(reservationDateInput.value);
-            if (selectedDate < now) {
-                event.preventDefault();
-                dateError.style.display = 'block';
+        // Enable table selection after restaurant is selected
+        restaurantSelect.addEventListener('change', function () {
+            const restaurantId = this.value;
+            if (restaurantId) {
+                fetchTables(restaurantId);
+                tableSelect.disabled = false;
             } else {
-                dateError.style.display = 'none';
-            }
-
-            const numberOfGuests = parseInt(numberOfGuestsInput.value);
-            if (numberOfGuests < 1) {
-                event.preventDefault();
-                guestsError.style.display = 'block';
-            } else {
-                guestsError.style.display = 'none';
-            }
-        });
-
-        // Validate reservation date on input change
-        reservationDateInput.addEventListener('change', function () {
-            const selectedDate = new Date(reservationDateInput.value);
-            if (selectedDate < now) {
-                dateError.style.display = 'block';
-            } else {
-                dateError.style.display = 'none';
-                // Refresh table options if restaurant is selected
-                if (restaurantSelect.value) {
-                    fetchTables();
-                }
-            }
-        });
-
-        // Validate number of guests on input change
-        numberOfGuestsInput.addEventListener('change', function () {
-            const numberOfGuests = parseInt(numberOfGuestsInput.value);
-            if (numberOfGuests < 1) {
-                guestsError.style.display = 'block';
-            } else {
-                guestsError.style.display = 'none';
-            }
-        });
-
-        // Fetch available tables when restaurant or reservation date changes
-        function fetchTables() {
-            const restaurantId = restaurantSelect.value;
-            const reservationDate = reservationDateInput.value;
-
-            if (!restaurantId || !reservationDate) {
+                tableSelect.disabled = true;
                 tableSelect.innerHTML = '<option value="">Select Table</option>';
-                tableError.style.display = 'none';
-                return;
+                reservationDateInput.disabled = true;
+                showSlotsBtn.disabled = true;
             }
+        });
 
-            // Make AJAX request to fetch available tables
-            fetch(`/admin/reservations/available-tables?restaurantId=${restaurantId}&reservationDate=${reservationDate}`, {
+        // Enable date selection and slots button after table is selected
+        tableSelect.addEventListener('change', function () {
+            if (this.value) {
+                reservationDateInput.disabled = false;
+                showSlotsBtn.disabled = false;
+            } else {
+                reservationDateInput.disabled = true;
+                showSlotsBtn.disabled = true;
+            }
+        });
+
+        // Fetch tables for the selected restaurant
+        function fetchTables(restaurantId) {
+            fetch(`/admin/reservations/available-tables?restaurantId=${restaurantId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
                 })
                 .then(data => {
-                    // Clear existing options
                     tableSelect.innerHTML = '<option value="">Select Table</option>';
-
-                    // Populate table dropdown with available tables
                     data.forEach(table => {
                         const option = document.createElement('option');
                         option.value = table.id;
                         option.textContent = table.tableNumber;
-                        // Pre-select the table if it matches the selectedTableId
-                        if (selectedTableId !== null && table.id == selectedTableId) {
-                            option.selected = true;
-                        }
                         tableSelect.appendChild(option);
                     });
                     tableError.style.display = 'none';
@@ -352,16 +390,98 @@
                 });
         }
 
-        // Listen for changes in restaurant selection
-        restaurantSelect.addEventListener('change', fetchTables);
+        // Validate number of guests
+        numberOfGuestsInput.addEventListener('change', function () {
+            const numberOfGuests = parseInt(this.value);
+            guestsError.style.display = numberOfGuests < 1 ? 'block' : 'none';
+        });
 
-        // Listen for changes in reservation date (to check table availability)
-        reservationDateInput.addEventListener('change', fetchTables);
+        // Show available slots modal
+        showSlotsBtn.addEventListener('click', function () {
+            const restaurantId = restaurantSelect.value;
+            const tableId = tableSelect.value;
+            const date = reservationDateInput.value;
 
-        // Initial fetch of tables if restaurant and date are pre-selected (e.g., after form validation error)
-        if (restaurantSelect.value && reservationDateInput.value) {
-            fetchTables();
+            if (!restaurantId || !tableId || !date) {
+                alert('Please select a restaurant, table, and date first.');
+                return;
+            }
+
+            fetchSlots(restaurantId, tableId, date);
+            $('#slotsModal').modal('show');
+        });
+
+        // Fetch and display available slots
+        function fetchSlots(restaurantId, tableId, date) {
+            fetch(`/admin/reservations/available-slots?restaurantId=${restaurantId}&tableId=${tableId}&date=${date}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(slots => {
+                    slotContainer.innerHTML = '';
+                    const now = new Date();
+                    const selectedDate = new Date(date);
+
+                    slots.forEach(slot => {
+                        const [hours, minutes] = slot.time.split(':').map(Number);
+                        const slotDateTime = new Date(selectedDate);
+                        slotDateTime.setHours(hours, minutes, 0, 0);
+
+                        // Check if the slot is in the past
+                        const isPast = slotDateTime < now;
+
+                        const div = document.createElement('div');
+                        div.textContent = slot.time;
+
+                        if (isPast) {
+                            div.className = 'slot reserved'; // Treat past slots as unavailable
+                            div.style.cursor = 'not-allowed';
+                        } else if (slot.available) {
+                            div.className = 'slot available';
+                            div.addEventListener('click', function () {
+                                document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+                                div.classList.add('selected');
+                                selectedSlot = slot.time;
+                            });
+                        } else {
+                            div.className = 'slot reserved';
+                            div.style.cursor = 'not-allowed';
+                        }
+
+                        slotContainer.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching slots:', error);
+                    slotContainer.innerHTML = 'Error loading slots.';
+                });
         }
+
+        // Confirm selected slot
+        confirmSlotBtn.addEventListener('click', function () {
+            if (selectedSlot) {
+                const date = reservationDateInput.value;
+                const dateTime = `${date}T${selectedSlot}:00`;
+                const selectedDateTime = new Date(dateTime);
+                const now = new Date();
+
+                if (selectedDateTime < now) {
+                    alert('Cannot select a time slot in the past.');
+                    return;
+                }
+
+                reservationDateHidden.value = dateTime;
+                $('#slotsModal').modal('hide');
+            } else {
+                alert('Please select a slot.');
+            }
+        });
     });
 </script>
 </body>

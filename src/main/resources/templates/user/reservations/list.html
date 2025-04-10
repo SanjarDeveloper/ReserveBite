@@ -128,19 +128,23 @@
             <td th:text="${reservation.numberOfGuests}"></td>
             <td>
                 <span th:if="${reservation.status == 'CONFIRMED'}" class="badge badge-success" th:text="${reservation.status}"></span>
-                <span th:if="${reservation.status == 'CANCELED'}" class="badge badge-danger" th:text="${reservation.status}"></span>
-                <span th:unless="${reservation.status == 'CONFIRMED' or reservation.status == 'CANCELED'}"
+                <span th:if="${reservation.status == 'CANCELLED'}" class="badge badge-danger" th:text="${reservation.status}"></span>
+                <span th:unless="${reservation.status == 'CONFIRMED' or reservation.status == 'CANCELLED'}"
                       class="badge badge-primary" th:text="${reservation.status}"></span>
             </td>
             <td th:text="${reservation.restaurant.name}"></td>
             <td th:text="${reservation.table.tableNumber}"></td>
             <td>
-                <a th:if="${reservation.status != 'CANCELED'}"
+                <!-- Show Cancel button only if status is ACTIVE -->
+                <a th:if="${reservation.status == 'ACTIVE'}"
                    th:href="@{/user/reservations/delete/{id}(id=${reservation.id})}"
                    class="btn btn-danger btn-sm"
                    onclick="return confirm('Are you sure you want to cancel this reservation?')">
                     <i class="fas fa-trash mr-1"></i>Cancel
                 </a>
+                <!-- Show "No actions available" for CANCELLED or COMPLETED -->
+                <span th:if="${reservation.status == 'CANCELLED' or reservation.status == 'COMPLETED'}"
+                      class="text-muted">No actions available</span>
             </td>
         </tr>
         </tbody>

@@ -37,4 +37,13 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     List<Reservation> findByRestaurantIdAndReservationDate(
             @Param("restaurantId") Long restaurantId,
             @Param("reservationDate") LocalDateTime reservationDate);
+
+    @Query("SELECT r FROM Reservation r WHERE r.table.id = :tableId " +
+            "AND DATE(r.reservationDate) = :date")
+    List<Reservation> findByTableIdAndDate(
+            @Param("tableId") Long tableId,
+            @Param("date") LocalDate date);
+
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.table JOIN FETCH r.restaurant WHERE r.user.username = :username")
+    List<Reservation> findByUserUsername(@Param("username") String username);
 }
